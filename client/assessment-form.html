@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assessment Submission | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul>
+        <li><a href="index.html" data-role="public">Landing</a></li>
+        <li><a href="login.html" data-role="public">Login</a></li>
+        <li><a href="register.html" data-role="public">Register</a></li>
+        <li><a href="student-dashboard.html" data-role="student">Student Dashboard</a></li>
+        <li><a href="courses.html" data-role="student">Courses</a></li>
+        <li><a href="admin-dashboard.html" data-role="admin">Admin Dashboard</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container">
+    <section class="page-header">
+      <h1>Assessment Submission</h1>
+      <p>Submit coursework details, weight, and due dates.</p>
+    </section>
+    <form class="card" data-form="assessment">
+      <label>Course
+        <select name="course" required></select>
+      </label>
+      <label>Assessment Title
+        <input type="text" name="title" required />
+      </label>
+      <label>Assessment Type
+        <select name="type" required>
+          <option value="assignment">Assignment</option>
+          <option value="quiz">Quiz</option>
+          <option value="project">Project</option>
+          <option value="exam">Exam</option>
+        </select>
+      </label>
+      <label>Weight (%)
+        <input type="number" name="weight" min="0" max="100" step="1" required />
+      </label>
+      <label>Due Date
+        <input type="date" name="dueDate" required />
+      </label>
+      <label>Notes
+        <textarea name="notes" rows="4" placeholder="Provide extra context"></textarea>
+      </label>
+      <button type="submit" class="btn">Submit Assessment</button>
+      <p class="helper-text" id="assessmentFeedback"></p>
+    </form>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+</body>
+</html>

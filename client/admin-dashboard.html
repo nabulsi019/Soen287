@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul>
+        <li><a href="index.html" data-role="public">Landing</a></li>
+        <li><a href="login.html" data-role="public">Login</a></li>
+        <li><a href="register.html" data-role="public">Register</a></li>
+        <li><a href="student-dashboard.html" data-role="student">Student Dashboard</a></li>
+        <li><a href="courses.html" data-role="student">Courses</a></li>
+        <li><a href="admin-dashboard.html" data-role="admin">Admin Dashboard</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container">
+    <section class="page-header">
+      <span class="page-tag">Admin</span>
+      <h1>Admin Operations</h1>
+      <p>Monitor platform usage, manage courses, and configure templates.</p>
+    </section>
+    <section class="dashboard-grid">
+      <article class="card">
+        <h2>Quick Actions</h2>
+        <ul>
+          <li><a href="admin-courses.html">Manage Courses</a></li>
+          <li><a href="admin-templates.html">Assessment Templates</a></li>
+          <li><a href="admin-stats.html">Analytics</a></li>
+        </ul>
+      </article>
+      <article class="card">
+        <h2>Pending Approvals</h2>
+        <ul id="pendingApprovals"></ul>
+      </article>
+      <article class="card full-span">
+        <h2>Notifications</h2>
+        <ul id="adminNotifications"></ul>
+      </article>
+    </section>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+</body>
+</html>

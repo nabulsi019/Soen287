@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Details | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul>
+        <li><a href="index.html" data-role="public">Landing</a></li>
+        <li><a href="login.html" data-role="public">Login</a></li>
+        <li><a href="register.html" data-role="public">Register</a></li>
+        <li><a href="student-dashboard.html" data-role="student">Student Dashboard</a></li>
+        <li><a href="courses.html" data-role="student">Courses</a></li>
+        <li><a href="admin-dashboard.html" data-role="admin">Admin Dashboard</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container">
+    <section class="page-header">
+      <h1 id="courseTitle">Course Title Placeholder</h1>
+      <p id="courseSummary">High-level summary of the course.</p>
+      <div class="meta">
+        <span id="courseCode">COMP 000</span>
+        <span id="courseCredits">3 credits</span>
+        <span id="courseTerm">Winter 2026</span>
+      </div>
+      <div class="progress" id="courseAverageSummary">
+        <div class="progress-label">
+          <span>Current Average</span>
+          <strong id="courseAverageValue">--%</strong>
+        </div>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress-fill" id="courseAverageBar" style="width: 0%;"></div>
+        </div>
+      </div>
+    </section>
+    <section class="layout course-details-grid">
+      <article class="card">
+        <h2>Description</h2>
+        <p id="courseDescription">Detailed description placeholder.</p>
+      </article>
+      <article class="card">
+        <div class="card-header">
+          <h2>Assessments</h2>
+          <a class="btn btn-secondary" id="addAssessmentLink" href="assessment-form.html">Add Assessment</a>
+        </div>
+        <div class="table-wrapper">
+          <table class="responsive-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Due</th>
+                <th>Status</th>
+                <th>Score</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="courseAssessmentRows"></tbody>
+          </table>
+        </div>
+      </article>
+      <article class="card">
+        <h2>Edit Assessment</h2>
+        <form data-form="assessment-edit">
+          <input type="hidden" name="assessmentId" />
+          <label>Title
+            <input type="text" name="title" required />
+          </label>
+          <label>Category
+            <input type="text" name="category" list="assessmentCategories" placeholder="Assignment, Lab, Quiz..." required />
+            <datalist id="assessmentCategories">
+              <option value="Assignment"></option>
+              <option value="Lab"></option>
+              <option value="Quiz"></option>
+              <option value="Exam"></option>
+            </datalist>
+          </label>
+          <label>Due Date
+            <input type="date" name="dueDate" required />
+          </label>
+          <label>Earned Marks
+            <input type="number" name="earned" min="0" step="0.1" placeholder="Optional" />
+          </label>
+          <label>Total Marks
+            <input type="number" name="total" min="0" step="0.1" required />
+          </label>
+          <label>Status
+            <select name="status" required>
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+            </select>
+          </label>
+          <div class="form-actions">
+            <button type="submit" class="btn">Save Changes</button>
+            <button type="button" class="btn btn-secondary" data-action="reset-assessment-form">Clear</button>
+          </div>
+          <p class="helper-text" id="assessmentFormFeedback">Select an assessment to edit.</p>
+        </form>
+      </article>
+      <article class="card full-span">
+        <h2>Learning Outcomes</h2>
+        <ul id="learningOutcomes"></ul>
+      </article>
+    </section>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+</body>
+</html>

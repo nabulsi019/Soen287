@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul>
+        <li><a href="index.html" data-role="public">Landing</a></li>
+        <li><a href="login.html" data-role="public">Login</a></li>
+        <li><a href="register.html" data-role="public">Register</a></li>
+        <li><a href="student-dashboard.html" data-role="student">Student Dashboard</a></li>
+        <li><a href="courses.html" data-role="student">Courses</a></li>
+        <li><a href="admin-dashboard.html" data-role="admin">Admin Dashboard</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container auth-page">
+    <h1>Log In</h1>
+    <form class="card" data-form="login">
+      <label>Email
+        <input type="email" name="email" required />
+      </label>
+      <label>Password
+        <input type="password" name="password" required minlength="8" />
+      </label>
+      <label>Role
+        <select name="role" required>
+          <option value="student">Student</option>
+          <option value="admin">Admin</option>
+        </select>
+      </label>
+      <button type="submit" class="btn">Sign In</button>
+      <p class="helper-text">No account? <a href="register.html">Register here</a>.</p>
+      <p class="helper-text" id="loginFeedback"></p>
+    </form>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+</body>
+</html>

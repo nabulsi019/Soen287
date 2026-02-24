@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Courses | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul>
+        <li><a href="index.html" data-role="public">Landing</a></li>
+        <li><a href="login.html" data-role="public">Login</a></li>
+        <li><a href="register.html" data-role="public">Register</a></li>
+        <li><a href="student-dashboard.html" data-role="student">Student Dashboard</a></li>
+        <li><a href="courses.html" data-role="student">Courses</a></li>
+        <li><a href="admin-dashboard.html" data-role="admin">Admin Dashboard</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container">
+    <section class="page-header">
+      <h1>My Courses</h1>
+      <p>Add, edit, or remove courses. Only your own records are visible.</p>
+    </section>
+    <section class="layout course-management">
+      <form class="card" data-form="course-manage">
+        <h2>Add / Edit Course</h2>
+        <input type="hidden" name="courseId" />
+        <label>Course Code
+          <input type="text" name="code" placeholder="e.g., SOEN 287" required />
+        </label>
+        <label>Course Name
+          <input type="text" name="name" placeholder="Course name" required />
+        </label>
+        <label>Instructor
+          <input type="text" name="instructor" placeholder="Instructor" required />
+        </label>
+        <label>Term
+          <input type="text" name="term" placeholder="e.g., Winter 2026" required />
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" name="enabled" checked />
+          <span>Enabled</span>
+        </label>
+        <div class="form-actions">
+          <button type="submit" class="btn">Save Course</button>
+          <button type="button" class="btn btn-secondary" data-action="reset-course-form">Clear</button>
+        </div>
+        <p class="helper-text" id="courseFormFeedback"></p>
+        <p class="alert info" id="catalogRuleMessage">You may add any enabled catalog course or create a custom course by using a new code.</p>
+        <div class="template-actions">
+          <label>Create from Template
+            <select data-select="course-template">
+              <option value="">Select template</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn-secondary" data-action="apply-template">Create from Template</button>
+        </div>
+      </form>
+      <section class="card">
+        <h2>Course List</h2>
+        <div class="table-wrapper">
+          <table class="responsive-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Instructor</th>
+                <th>Term</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="studentCourseTable"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+</body>
+</html>

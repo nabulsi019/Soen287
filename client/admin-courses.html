@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Courses | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul>
+        <li><a href="index.html" data-role="public">Landing</a></li>
+        <li><a href="login.html" data-role="public">Login</a></li>
+        <li><a href="register.html" data-role="public">Register</a></li>
+        <li><a href="student-dashboard.html" data-role="student">Student Dashboard</a></li>
+        <li><a href="courses.html" data-role="student">Courses</a></li>
+        <li><a href="admin-dashboard.html" data-role="admin">Admin Dashboard</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container">
+    <section class="page-header">
+      <span class="page-tag">Admin</span>
+      <h1>Course Management</h1>
+      <p>Create, update, or archive course offerings.</p>
+    </section>
+    <section class="layout">
+      <form class="card" data-form="admin-course">
+        <h2>Course Form</h2>
+        <input type="hidden" name="courseId" />
+        <label>Course Code
+          <input type="text" name="code" required />
+        </label>
+        <label>Title
+          <input type="text" name="title" required />
+        </label>
+        <label>Credits
+          <input type="number" name="credits" min="0" step="1" required />
+        </label>
+        <label>Term
+          <select name="term" required>
+            <option value="winter-2026">Winter 2026</option>
+            <option value="fall-2025">Fall 2025</option>
+          </select>
+        </label>
+        <label>Description
+          <textarea name="description" rows="4" required></textarea>
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" name="enabled" checked />
+          <span>Enabled (visible to students)</span>
+        </label>
+        <div class="form-actions">
+          <button type="submit" class="btn">Save Course</button>
+          <button type="button" class="btn btn-secondary" data-action="reset-admin-course-form">Clear</button>
+        </div>
+        <p class="helper-text" id="adminCourseFeedback">Enabled catalog courses can be added by students. Disabled courses are hidden unless they create a custom course.</p>
+      </form>
+      <section class="card" id="adminCourseList">
+        <h2>Existing Courses</h2>
+        <div class="table-wrapper">
+          <table class="responsive-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Title</th>
+                <th>Term</th>
+                <th>Enabled</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminCourseTable"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+</body>
+</html>
