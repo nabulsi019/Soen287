@@ -1,50 +1,7 @@
-/*
-  FILE: assets/styles.css
-  STYLESHEET: Global / Shared Stylesheet
-  COURSE: SOEN 287 – Web Programming
-
-  PURPOSE:
-    Single stylesheet used by every HTML page in the project. It defines:
-      1. CSS custom properties (design tokens) in :root
-      2. Base/reset rules for global elements
-      3. Layout primitives (.container, .dashboard-grid, .layout)
-      4. Reusable UI components (.card, .btn, .badge, .progress, .alert, etc.)
-      5. Page-specific helpers (.auth-page, .hero, .page-header, etc.)
-      6. A responsive mobile breakpoint at ≤ 900 px
-
-  COLOUR PALETTE (CSS Custom Properties):
-    --primary      : #7a1d3f  – Concordia dark red; used for buttons, headings
-    --primary-dark : #5c102c  – darker shade for hover states (currently reserved)
-    --accent       : #008c9e  – teal; used for links, focus rings, progress bars
-    --accent-light : #bce8ef  – light teal; secondary button backgrounds
-    --bg           : #f6f2f4  – page background (off-white with slight pink tint)
-    --surface      : #ffffff  – card and header backgrounds
-    --surface-alt  : #faf7fa  – slightly tinted surface for form inputs
-    --border       : #e3d9e2  – subtle border colour
-    --text         : #1f1b2c  – near-black body text
-    --muted        : #6d6577  – de-emphasised text (labels, helper text)
-    --success      : #1f8a6b  – green for success messages and completed badges
-    --error        : #b42318  – red for error messages and danger actions
-
-  DESIGN DECISIONS:
-    - border-radius: 999px is used on pills (nav links, badges, buttons) for a
-      fully rounded "capsule" shape without needing to know the element's height.
-    - box-sizing: border-box is applied universally so padding and border are
-      included in declared widths, preventing layout overflow surprises.
-    - CSS transitions (200–300 ms ease) are applied to interactive elements
-      for smooth hover and focus animations without JavaScript.
-    - `font: inherit` on inputs/select/textarea ensures form controls use the
-      page's body font (Inter) instead of the browser's default UI font.
-    - `outline: none` on focused inputs is intentional — a custom box-shadow
-      ring (0 0 0 3px accent) is provided instead for better visual design
-      while still meeting accessibility requirements.
+/*Mohammed AlNabulsi
+40302830
 */
 
-/* ==========================================================================
-   1. DESIGN TOKENS
-   CSS custom properties consumed throughout the stylesheet.
-   Centralising colours here makes global redesigns a one-line change.
-   ========================================================================== */
 :root {
   --primary: #7a1d3f;
   --primary-dark: #5c102c;
@@ -60,20 +17,12 @@
   --error: #b42318;
 }
 
-/* ==========================================================================
-   2. GLOBAL RESET & BASE
-   Minimal reset to ensure consistent cross-browser rendering.
-   ========================================================================== */
-
-/* Include padding and border in element dimensions for all elements */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-/* Body: flex column so the sticky header + flex:1 main + footer layout works.
-   min-height:100vh keeps the footer at the bottom even on short pages.       */
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -85,31 +34,22 @@ body {
   line-height: 1.6;
 }
 
-/* Prevent images from overflowing their containers */
 img {
   max-width: 100%;
   height: auto;
 }
 
-/* Remove default underlines; colour inherits from parent by default */
 a {
   color: inherit;
   text-decoration: none;
   transition: color 200ms ease;
 }
 
-/* Teal highlight on hover and keyboard focus for all links */
 a:hover,
 a:focus-visible {
   color: var(--accent);
 }
 
-/* ==========================================================================
-   3. HEADER & NAVIGATION
-   Sticky top bar shared by every page.
-   ========================================================================== */
-
-/* Sticky header with subtle shadow to separate it from page content */
 header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -119,7 +59,6 @@ header {
   box-shadow: 0 10px 30px rgba(31, 27, 44, 0.06);
 }
 
-/* Flex row: brand logo+name on the left, nav links on the right */
 .primary-nav {
   display: flex;
   align-items: center;
@@ -128,7 +67,6 @@ header {
   gap: 1rem;
 }
 
-/* Brand: logo image + site name side by side */
 .primary-nav .brand {
   display: inline-flex;
   align-items: center;
@@ -142,7 +80,6 @@ header {
   line-height: 1.2;
 }
 
-/* Logo image: fixed 42×42 px square; transitions for hover effects */
 .nav-logo {
   width: 42px;
   height: 42px;
@@ -150,12 +87,10 @@ header {
   transition: transform 250ms ease;
 }
 
-/* app.js adds this class when the logo image fails to load */
 .nav-logo.logo-hidden {
   display: none;
 }
 
-/* Horizontal list of nav links; no bullets, no default margin/padding */
 .primary-nav ul {
   list-style: none;
   display: flex;
@@ -168,7 +103,6 @@ header {
   margin: 0;
 }
 
-/* Each nav link is a pill-shaped button with smooth hover transition */
 .primary-nav a {
   padding: 0.45rem 0.9rem;
   border-radius: 999px;
@@ -178,7 +112,6 @@ header {
   transition: background 200ms ease, color 200ms ease;
 }
 
-/* Active page link and hover/focus states use the primary red tint */
 .primary-nav a.active,
 .primary-nav a:hover,
 .primary-nav a:focus-visible {
@@ -186,7 +119,6 @@ header {
   color: var(--primary);
 }
 
-/* Hamburger toggle button: hidden on desktop, shown by media query below */
 .nav-toggle {
   display: none;
   flex-direction: column;
@@ -198,7 +130,6 @@ header {
   cursor: pointer;
 }
 
-/* Each hamburger line (three <span> elements inside the button) */
 .nav-toggle span {
   width: 24px;
   height: 3px;
@@ -206,29 +137,18 @@ header {
   border-radius: 999px;
 }
 
-/* ==========================================================================
-   4. LAYOUT UTILITIES
-   ========================================================================== */
-
-/* Main content wrapper: max 1200 px, centred, grows to fill remaining height */
 .container {
   width: min(1200px, 94%);
   margin: 2rem auto;
   flex: 1;
 }
 
-/* <main> stacks its direct children vertically with consistent spacing */
 main {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* ==========================================================================
-   5. HERO SECTION (index.html landing page)
-   ========================================================================== */
-
-/* Large centred card with stronger shadow for visual prominence */
 .hero {
   background: var(--surface);
   border-radius: 1.5rem;
@@ -237,7 +157,6 @@ main {
   text-align: center;
 }
 
-/* Stacks children vertically and centres them (logo, h1, p, CTA group) */
 .hero-centered {
   display: flex;
   flex-direction: column;
@@ -245,7 +164,6 @@ main {
   gap: 1rem;
 }
 
-/* Large Concordia logo in the hero; subtle scale on hover */
 .brand-logo {
   width: 170px;
   height: auto;
@@ -256,7 +174,6 @@ main {
   transform: scale(1.03);
 }
 
-/* Row of CTA buttons below the hero tagline; wraps on small screens */
 .cta-group {
   display: flex;
   gap: 1rem;
@@ -264,11 +181,6 @@ main {
   margin-top: 1.5rem;
 }
 
-/* ==========================================================================
-   6. BUTTONS
-   ========================================================================== */
-
-/* Base button: pill shape, bold text, smooth hover lift */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -281,37 +193,27 @@ main {
   transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease;
 }
 
-/* Teal focus ring for keyboard accessibility (replaces browser default outline) */
 .btn:focus-visible {
   outline: 3px solid rgba(0, 140, 158, 0.35);
   outline-offset: 3px;
 }
 
-/* Subtle lift + shadow on hover to convey interactivity */
 .btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
 }
 
-/* Primary (default) button: Concordia red background, white text
-   .btn-primary listed for semantic clarity; .btn alone also defaults to primary */
 .btn-primary,
 .btn {
   background: var(--primary);
   color: #fff;
 }
 
-/* Secondary button: light teal background, dark teal text */
 .btn-secondary {
   background: var(--accent-light);
   color: var(--accent);
 }
 
-/* ==========================================================================
-   7. CARD COMPONENT
-   Applied to .card, .hero, .filters, .layout, and direct children of grids.
-   All share the same surface background, rounded corners, and soft shadow.
-   ========================================================================== */
 .card,
 .hero,
 .filters,
@@ -325,24 +227,16 @@ main {
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-/* Makes a card span all columns of a CSS Grid parent (e.g., progress card) */
 .card.full-span {
   grid-column: 1 / -1;
 }
 
-/* ==========================================================================
-   8. PAGE HEADER
-   The intro block at the top of each page (title, subtitle, optional badge).
-   ========================================================================== */
-
-/* Vertical stack with a small gap between tag, h1, p */
 .page-header {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-/* Small pill badge used on admin pages to visually mark restricted areas */
 .page-tag {
   align-self: flex-start;
   background: rgba(0, 140, 158, 0.1);
@@ -354,7 +248,6 @@ main {
   letter-spacing: 0.02em;
 }
 
-/* Row of metadata chips (course code, credits, term) on course-details.html */
 .meta {
   display: flex;
   gap: 1rem;
@@ -363,17 +256,11 @@ main {
   font-size: 0.95rem;
 }
 
-/* ==========================================================================
-   9. AUTH PAGES (login.html and register.html)
-   ========================================================================== */
-
-/* Centres the card both vertically and horizontally on auth pages */
 .auth-page {
   align-items: center;
   text-align: center;
 }
 
-/* Constrain the form card to a readable max-width; re-align text left inside */
 .auth-page .card {
   width: min(460px, 100%);
   margin-inline: auto;
@@ -383,11 +270,6 @@ main {
   gap: 1rem;
 }
 
-/* ==========================================================================
-   10. FORM ELEMENTS
-   ========================================================================== */
-
-/* Label stacks above its input with bold muted colour */
 label {
   display: flex;
   flex-direction: column;
@@ -396,19 +278,17 @@ label {
   color: var(--muted);
 }
 
-/* Uniform padding, border, and background for all text inputs */
 input,
 select,
 textarea {
   padding: 0.75rem 0.85rem;
   border-radius: 0.9rem;
   border: 1px solid var(--border);
-  font: inherit; /* ensures Inter font, not browser UI default */
+  font: inherit;
   background: var(--surface-alt);
   transition: border 200ms ease, box-shadow 200ms ease;
 }
 
-/* Custom teal focus ring replaces the browser's default blue outline */
 input:focus,
 select:focus,
 textarea:focus {
@@ -417,78 +297,56 @@ textarea:focus {
   outline: none;
 }
 
-/* Allow manual vertical resize of textareas; prevent horizontal resize */
 textarea {
   resize: vertical;
 }
 
-/* Checkbox labels lay out horizontally (overrides the default column direction) */
 .checkbox {
   flex-direction: row;
   align-items: center;
   font-weight: 500;
 }
 
-/* Shrink checkbox to intrinsic size; add right margin before label text */
 .checkbox input {
   width: auto;
   margin-right: 0.5rem;
 }
 
-/* Row of submit + clear buttons at the bottom of forms */
 .form-actions {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
 }
 
-/* All <form> elements stack their children vertically */
 form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-/* Small helper text below inputs or forms; changes colour via data-state attr */
 .helper-text {
   font-size: 0.9rem;
   color: var(--muted);
 }
 
-/* app.js sets data-state="error" on feedback paragraphs for validation errors */
 .helper-text[data-state='error'] {
   color: var(--error);
 }
 
-/* app.js sets data-state="success" on feedback paragraphs after successful saves */
 .helper-text[data-state='success'] {
   color: var(--success);
 }
 
-/* ==========================================================================
-   11. UTILITY CLASSES
-   ========================================================================== */
-
-/* De-emphasised italic text (e.g., "No items found" empty states) */
 .muted {
   color: var(--muted);
   font-style: italic;
 }
 
-/* NOTE: .muted is declared twice in the original source — the second
-   declaration is redundant but harmless (same property values).          */
 .muted {
   color: var(--muted);
   font-style: italic;
 }
 
-/* ==========================================================================
-   12. GRID LAYOUTS
-   ========================================================================== */
-
-/* Responsive grid for dashboard cards and card grids.
-   auto-fit + minmax: columns are as wide as possible but collapse gracefully
-   to fewer columns as the viewport narrows.                                   */
 .dashboard-grid,
 .card-grid {
   display: grid;
@@ -496,34 +354,25 @@ form {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
-/* Minimum height prevents grid cells from becoming too small */
 .card-grid > * {
   min-height: 120px;
 }
 
-/* ==========================================================================
-   13. TABLES
-   ========================================================================== */
-
-/* Scrollable wrapper prevents tables from overflowing on small screens */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
 }
 
-/* Full-width table; collapsed borders for clean grid appearance */
 .responsive-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.95rem;
 }
 
-/* Tinted header row to visually distinguish it from data rows */
 .responsive-table thead {
   background: rgba(122, 29, 63, 0.08);
 }
 
-/* Consistent cell padding and bottom border for row separation */
 .responsive-table th,
 .responsive-table td {
   padding: 0.9rem;
@@ -531,19 +380,16 @@ form {
   border-bottom: 1px solid var(--border);
 }
 
-/* Subtle row highlight on hover for readability */
 .responsive-table tbody tr:hover {
   background: rgba(122, 29, 63, 0.04);
 }
 
-/* Inline row actions (Edit / Delete buttons) displayed side by side */
 .table-actions {
   display: inline-flex;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-/* Action buttons have no box; rely on colour to indicate clickability */
 .table-actions button {
   border: none;
   background: transparent;
@@ -558,17 +404,10 @@ form {
   color: var(--primary);
 }
 
-/* .danger class on delete buttons uses red to signal destructive action */
 .table-actions button.danger {
   color: var(--error);
 }
 
-/* ==========================================================================
-   14. EMPTY / PLACEHOLDER STATES
-   Displayed by app.js when a list or table has no data to show.
-   ========================================================================== */
-
-/* Dashed border box centred in its container */
 .placeholder,
 .table-placeholder,
 .empty-state {
@@ -582,12 +421,6 @@ form {
   background: var(--surface-alt);
 }
 
-/* ==========================================================================
-   15. BADGES
-   Small status pills rendered inside table cells by app.js.
-   ========================================================================== */
-
-/* Base badge: pill shape, small text, capitalised */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -598,33 +431,22 @@ form {
   text-transform: capitalize;
 }
 
-/* Orange-tinted badge for assessments with status="pending" */
 .badge.pending {
   background: rgba(255, 145, 77, 0.18);
   color: #c25400;
 }
 
-/* Green-tinted badge for assessments with status="completed" */
 .badge.completed {
   background: rgba(31, 138, 107, 0.18);
   color: var(--success);
 }
 
-/* ==========================================================================
-   16. PROGRESS BARS
-   Used on student-dashboard.html, course-details.html, and admin-stats.html.
-   All three elements (.progress, .progress-track, .progress-fill) work
-   together to form the complete progress bar component.
-   ========================================================================== */
-
-/* Vertical stack: label row above, track below */
 .progress {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
 
-/* Row with course name on the left and percentage on the right */
 .progress-label {
   display: flex;
   justify-content: space-between;
@@ -632,43 +454,33 @@ form {
   color: var(--muted);
 }
 
-/* Background track: full-width, rounded, light teal */
 .progress-track {
   width: 100%;
   height: 0.75rem;
   background: rgba(0, 140, 158, 0.15);
   border-radius: 999px;
-  overflow: hidden; /* clips the fill so it respects border-radius */
+  overflow: hidden;
 }
 
-/* Animated fill: gradient from teal to red; width set inline by app.js */
 .progress-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--accent), var(--primary));
   border-radius: inherit;
-  transition: width 300ms ease; /* smooth animation when value changes */
+  transition: width 300ms ease;
 }
 
-/* Vertical stack of progress bars used in dashboard charts */
 .chart-list {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
-/* Large bold number displayed in the analytics "Total Students" card */
 .stat-value {
   font-size: 2.5rem;
   font-weight: 700;
   margin: 0.5rem 0;
 }
 
-/* ==========================================================================
-   17. ALERT BOXES
-   Info banners used for non-critical instructional messages on forms.
-   ========================================================================== */
-
-/* Base alert: rounded, teal-tinted background, subtle border */
 .alert {
   border-radius: 0.9rem;
   padding: 0.85rem 1rem;
@@ -678,15 +490,9 @@ form {
   font-size: 0.9rem;
 }
 
-/* .info modifier: slightly stronger teal border for emphasis */
 .alert.info {
   border-color: rgba(0, 140, 158, 0.35);
 }
-
-/* ==========================================================================
-   18. TEMPLATE ACTIONS (courses.html)
-   Row containing the template <select> and "Create from Template" button.
-   ========================================================================== */
 
 .template-actions {
   margin-top: 0.5rem;
@@ -696,17 +502,10 @@ form {
   align-items: center;
 }
 
-/* Ensure the dropdown is wide enough to display template names clearly */
 .template-actions select {
   min-width: 240px;
 }
 
-/* ==========================================================================
-   19. TEMPLATE COMPONENT ROWS (admin-templates.html)
-   The dynamically injected assessment weight rows in the template builder.
-   ========================================================================== */
-
-/* Container for all component rows: vertical stack */
 .components-list {
   display: flex;
   flex-direction: column;
@@ -714,16 +513,13 @@ form {
   margin: 1rem 0;
 }
 
-/* Each row: CSS Grid with auto-fit columns for the inputs + a fixed remove button.
-   `auto` on the last column ensures the remove button doesn't grow to fill space. */
 .component-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) auto;
   gap: 0.75rem;
-  align-items: end; /* aligns inputs and button to the same baseline */
+  align-items: end;
 }
 
-/* Remove button inside each component row: muted red-tinted background */
 .component-row button {
   border: none;
   background: rgba(122, 29, 63, 0.08);
@@ -737,21 +533,11 @@ form {
   background: rgba(122, 29, 63, 0.18);
 }
 
-/* ==========================================================================
-   20. EMPTY MESSAGE UTILITY
-   ========================================================================== */
-
-/* Used by app.js when a list has no items to show */
 .empty-message {
   color: var(--muted);
   font-style: italic;
 }
 
-/* ==========================================================================
-   21. FOOTER
-   ========================================================================== */
-
-/* Centred footer pushed to the bottom of the page by body's flex column layout */
 footer {
   text-align: center;
   padding: 1.5rem;
@@ -759,22 +545,16 @@ footer {
   color: var(--muted);
 }
 
-/* ==========================================================================
-   22. RESPONSIVE BREAKPOINT – ≤ 900 px (tablet and mobile)
-   ========================================================================== */
 @media (max-width: 900px) {
-  /* Show the hamburger toggle button on small screens */
   .nav-toggle {
     display: flex;
   }
 
-  /* Allow nav items to wrap below the brand logo when toggled open */
   .primary-nav {
     flex-wrap: wrap;
     padding: 1rem;
   }
 
-  /* Nav links are hidden by default on mobile; shown when .open is added by app.js */
   .primary-nav ul {
     flex-direction: column;
     width: 100%;
@@ -783,30 +563,25 @@ footer {
     padding-top: 1rem;
   }
 
-  /* app.js toggles .open on the <nav> element when hamburger is clicked */
   .primary-nav.open ul {
     display: flex;
   }
 
-  /* Full-width nav links improve tap target size on touch devices */
   .primary-nav a {
     width: 100%;
   }
 
-  /* Allow table cells to wrap text instead of forcing one long line */
   .responsive-table,
   .responsive-table th,
   .responsive-table td {
     white-space: normal;
   }
 
-  /* Hero brand alignment override for narrow screens */
   .hero-brand {
     text-align: center;
     justify-content: center;
   }
 
-  /* Brand visual (if used) expands to full row width on mobile */
   .brand-visual {
     flex: 1 1 100%;
   }

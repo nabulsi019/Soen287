@@ -1,70 +1,6 @@
+<!-- Mohammed AlNbaulsi 40302830 -->
+
 <!DOCTYPE html>
-<!--
-  FILE: admin-courses.html
-  PAGE: Admin Course Catalog Management (protected – admins only)
-  COURSE: SOEN 287 – Web Programming
-
-  PURPOSE:
-    Allows admins to create, edit, and archive course offerings in the global
-    course catalog. Catalog courses that are marked "Enabled" become available
-    for students to add to their personal course lists on courses.html. Disabled
-    courses are hidden from students unless a student uses that exact code as a
-    custom course (in which case it still appears in their own list).
-
-  ACCESS CONTROL:
-    app.js enforces admin-only access on page load; non-admin sessions are
-    redirected to login.html.
-
-  THE CATALOG vs. STUDENT COURSES:
-    - The admin catalog (managed here) is the official list of course offerings.
-    - Students choose from this list OR create custom courses on courses.html.
-    - Disabling a catalog course hides it from the student template selector
-      but does NOT remove it from students who already added it.
-
-  FORM: data-form="admin-course"
-    Handles both CREATE and UPDATE through the same form:
-      - courseId (hidden) is empty  → new catalog course is created.
-      - courseId (hidden) is filled → existing catalog course is updated.
-        (app.js fills this when the user clicks "Edit" in the table.)
-
-    Fields:
-      - code        → course code (e.g., "SOEN 287"); required, unique in catalog
-      - title       → full course title; required
-      - credits     → integer credit value (min 0); required
-      - term        → dropdown: "Winter 2026" or "Fall 2025"
-                      (fixed options – extending to more terms is a future task)
-      - description → multi-line course description displayed on course-details.html
-      - enabled     → checkbox; unchecked = hidden from students in the template
-                      selector dropdown on courses.html
-
-    Buttons:
-      - "Save Course"  → app.js saves to localStorage and refreshes the table.
-      - "Clear" (data-action="reset-admin-course-form") → clears all fields and
-        empties courseId so the next submit creates a new record.
-
-    #adminCourseFeedback:
-      - Default text explains the enable/disable visibility rule.
-      - app.js overwrites this with "Saved!" or validation error messages.
-
-  EXISTING COURSES TABLE: #adminCourseTable (<tbody>)
-    app.js renders one row per catalog course from localStorage.
-    Columns: Code | Title | Term | Enabled (Yes/No) | Actions
-    Row Actions:
-      - "Edit"    → populates the form above with that course's data
-      - "Delete"  → removes the catalog entry from localStorage and refreshes
-
-  LAYOUT:
-    Two-column .layout grid: form (left) + table (right); stacks on mobile.
-
-  STRUCTURE:
-    <header>  → shared sticky navigation
-    <main>
-      <section.page-header>  → Admin badge + title + subtitle
-      <section.layout>
-        <form data-form="admin-course">  → course create/edit card
-        <section#adminCourseList>        → existing courses table card
-    <footer>  → copyright line
--->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -74,7 +10,6 @@
   <script src="assets/app.js" defer></script>
 </head>
 <body>
-  <!-- Shared navigation – see index.html for full nav comments -->
   <header>
     <nav class="primary-nav" data-nav>
                   <a class="brand" href="index.html">
@@ -96,73 +31,44 @@
       </ul>
     </nav>
   </header>
-
   <main class="container">
     <section class="page-header">
       <span class="page-tag">Admin</span>
       <h1>Course Management</h1>
       <p>Create, update, or archive course offerings.</p>
     </section>
-
-    <!-- Two-column layout: form (left) + existing courses table (right) -->
     <section class="layout">
-
-      <!-- CREATE / EDIT FORM
-           data-form="admin-course" → app.js submit handler.
-           courseId hidden field: empty = create; populated by Edit = update. -->
       <form class="card" data-form="admin-course">
         <h2>Course Form</h2>
-
-        <!-- Hidden: empty for new courses; app.js fills on Edit click -->
         <input type="hidden" name="courseId" />
-
-        <!-- Must be unique in the catalog; students reference this code -->
         <label>Course Code
           <input type="text" name="code" required />
         </label>
         <label>Title
           <input type="text" name="title" required />
         </label>
-
-        <!-- Integer credit count; min=0 prevents negative values -->
         <label>Credits
           <input type="number" name="credits" min="0" step="1" required />
         </label>
-
-        <!-- Term dropdown: fixed to current relevant academic periods -->
         <label>Term
           <select name="term" required>
             <option value="winter-2026">Winter 2026</option>
             <option value="fall-2025">Fall 2025</option>
           </select>
         </label>
-
-        <!-- Description appears on course-details.html for students -->
         <label>Description
           <textarea name="description" rows="4" required></textarea>
         </label>
-
-        <!-- Enabled = students can add this course from the catalog.
-             Disabled = hidden from student template selector. -->
         <label class="checkbox">
           <input type="checkbox" name="enabled" checked />
           <span>Enabled (visible to students)</span>
         </label>
-
         <div class="form-actions">
           <button type="submit" class="btn">Save Course</button>
-          <!-- Resets all fields and clears courseId → next save = new course -->
           <button type="button" class="btn btn-secondary" data-action="reset-admin-course-form">Clear</button>
         </div>
-
-        <!-- Default text explains the enable/disable rule;
-             app.js overwrites with "Saved!" or error feedback after submit -->
         <p class="helper-text" id="adminCourseFeedback">Enabled catalog courses can be added by students. Disabled courses are hidden unless they create a custom course.</p>
       </form>
-
-      <!-- EXISTING COURSES TABLE
-           app.js fills #adminCourseTable with one row per catalog course.
-           "Edit" populates the form above; "Delete" removes from localStorage. -->
       <section class="card" id="adminCourseList">
         <h2>Existing Courses</h2>
         <div class="table-wrapper">
@@ -176,14 +82,12 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <!-- Rows injected dynamically; empty until app.js runs -->
             <tbody id="adminCourseTable"></tbody>
           </table>
         </div>
       </section>
     </section>
   </main>
-
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>

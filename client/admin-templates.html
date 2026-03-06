@@ -1,79 +1,6 @@
+<!-- Qais alasmar 40260168-->
+
 <!DOCTYPE html>
-<!--
-  FILE: admin-templates.html
-  PAGE: Assessment Template Builder (protected – admins only)
-  COURSE: SOEN 287 – Web Programming
-
-  PURPOSE:
-    Allows admins to create reusable assessment weight templates for courses.
-    A template defines the breakdown of a course's grade into named components
-    (e.g., "Assignments 30%, Labs 20%, Midterm 20%, Final 30%"). Students can
-    then apply a template when adding a course on courses.html to automatically
-    pre-populate their assessment list without manual entry.
-
-  ACCESS CONTROL:
-    app.js enforces admin-only access; non-admins are redirected to login.html.
-
-  WHY TEMPLATES MATTER:
-    In a real university system, assessment structures are defined by course
-    outlines. Templates let admins encode those structures once, and students
-    apply them rather than manually re-entering the same assessment categories
-    every semester. This also ensures consistency across students taking the
-    same course.
-
-  FORM: data-form="template"
-    Handles CREATE and UPDATE:
-      - templateId (hidden) is empty  → new template saved to localStorage.
-      - templateId (hidden) is filled → existing template updated.
-
-    Static Fields:
-      - courseCode  → the associated catalog course code (e.g., "SOEN 390")
-      - courseName  → human-readable course name
-      - name        → template label (e.g., "SOEN 390 – Standard Grading")
-      - description → optional explanation of the template's purpose
-
-    Dynamic Components Section (data-repeat="components"):
-      - .components-list is an empty container at load time.
-      - "Add Component" (data-action="addComponent") → app.js appends a new
-        .component-row to .components-list. Each row contains:
-          • Category name input (e.g., "Assignments")
-          • Weight (%) number input
-          • Remove button (app.js removes that row from the DOM)
-      - Weights must sum to exactly 100%; app.js validates this on submit
-        and shows an error in #templateFeedback if they do not.
-
-    Buttons:
-      - "Save Template"  → app.js validates weight sum, saves to localStorage,
-                           refreshes #adminTemplateTable.
-      - "Clear" (data-action="reset-template-form") → clears all fields and
-        removes all dynamically added component rows.
-
-    #templateFeedback:
-      - Default text gives instructions for building components.
-      - app.js overwrites with validation errors (e.g., "Weights must sum to 100%")
-        or "Template saved!" on success.
-
-  TEMPLATE LIBRARY TABLE: #adminTemplateTable (<tbody>)
-    app.js renders one row per saved template:
-      Columns: Name | Course | Weights summary | Actions
-    Row Actions:
-      - "Edit"   → fills the form with the template's data for modification.
-      - "Delete" → removes the template from localStorage and refreshes the table.
-
-  COMPONENT ROW STYLING:
-    Each dynamically injected .component-row uses CSS Grid to align the
-    name input, weight input, and remove button side by side (see styles.css
-    .component-row rule). On narrow screens they stack vertically.
-
-  STRUCTURE:
-    <header>  → shared sticky navigation
-    <main>
-      <section.page-header>  → Admin badge + title + subtitle
-      <section.layout>
-        <form data-form="template">   → Template Builder card
-        <section#templateLibrary>     → Template Library table card
-    <footer>  → copyright line
--->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -83,7 +10,6 @@
   <script src="assets/app.js" defer></script>
 </head>
 <body>
-  <!-- Shared navigation – see index.html for full nav comments -->
   <header>
     <nav class="primary-nav" data-nav>
                   <a class="brand" href="index.html">
@@ -105,74 +31,40 @@
       </ul>
     </nav>
   </header>
-
   <main class="container">
     <section class="page-header">
       <span class="page-tag">Admin</span>
       <h1>Assessment Templates</h1>
       <p>Standardize assessment structures for new courses.</p>
     </section>
-
-    <!-- Two-column layout: builder form (left) + template library (right) -->
     <section class="layout">
-
-      <!-- TEMPLATE BUILDER FORM
-           data-form="template" → app.js submit handler.
-           templateId hidden: empty = create; app.js fills on Edit = update. -->
       <form class="card" data-form="template">
         <h2>Template Builder</h2>
-
-        <!-- Hidden: empty for new templates; app.js fills on Edit click -->
         <input type="hidden" name="templateId" />
-
-        <!-- Course the template is associated with -->
         <label>Course Code
           <input type="text" name="courseCode" placeholder="e.g., SOEN 390" required />
         </label>
         <label>Course Name
           <input type="text" name="courseName" placeholder="e.g., Software Engineering Project" required />
         </label>
-
-        <!-- Descriptive label for this template, shown in the library table -->
         <label>Template Name
           <input type="text" name="name" required />
         </label>
-
-        <!-- Optional; explains the intent or version of this template -->
         <label>Description
           <textarea name="description" rows="3"></textarea>
         </label>
-
-        <!-- DYNAMIC COMPONENTS SECTION
-             data-repeat="components" signals to app.js that this block
-             contains a repeatable row pattern.
-             .components-list is empty on load; app.js injects .component-row
-             elements when "Add Component" is clicked.
-             Each component row has: category name | weight (%) | remove button
-             app.js validates that all weights sum to exactly 100% before saving. -->
         <div class="repeatable" data-repeat="components">
           <h3>Components</h3>
           <p class="helper-text">Weights must sum to 100%.</p>
-          <!-- app.js appends .component-row elements here dynamically -->
           <div class="components-list"></div>
-          <!-- data-action="addComponent" → app.js injects a new component row -->
           <button type="button" class="btn btn-secondary" data-action="addComponent">Add Component</button>
         </div>
-
         <div class="form-actions">
           <button type="submit" class="btn">Save Template</button>
-          <!-- Clears all fields and removes dynamically added component rows -->
           <button type="button" class="btn btn-secondary" data-action="reset-template-form">Clear</button>
         </div>
-
-        <!-- Instructional default; app.js replaces with success or error text -->
         <p class="helper-text" id="templateFeedback">Add categories such as Assignments, Labs, or Exams with their respective weights.</p>
       </form>
-
-      <!-- TEMPLATE LIBRARY TABLE
-           app.js renders one row per saved template from localStorage.
-           Columns: Name | Course | Weights summary | Actions
-           "Edit" loads the template into the builder; "Delete" removes it. -->
       <section class="card" id="templateLibrary">
         <h2>Template Library</h2>
         <div class="table-wrapper">
@@ -185,14 +77,12 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <!-- Populated entirely by app.js at runtime -->
             <tbody id="adminTemplateTable"></tbody>
           </table>
         </div>
       </section>
     </section>
   </main>
-
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>

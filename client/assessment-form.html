@@ -1,56 +1,6 @@
+<!-- Qais alasmar 40260168-->
+
 <!DOCTYPE html>
-<!--
-  FILE: assessment-form.html
-  PAGE: New Assessment Submission (protected – students only)
-  COURSE: SOEN 287 – Web Programming
-
-  PURPOSE:
-    A dedicated full-page form for creating a brand-new assessment record
-    and attaching it to one of the student's courses. This page is reached
-    by clicking "Add Assessment" on course-details.html (which appends
-    ?courseId=<id> to the URL so the course dropdown auto-selects correctly).
-
-  DIFFERENCE FROM THE INLINE EDIT FORM ON course-details.html:
-    - course-details.html has an inline "Edit Assessment" form used to UPDATE
-      existing assessments for that specific course.
-    - assessment-form.html is a standalone page for CREATING a new assessment,
-      and it includes a course selector so the student can attach it to any
-      of their courses (not just the one they came from).
-
-  HOW IT WORKS:
-    1. app.js populates the <select name="course"> with all of the logged-in
-       student's courses from localStorage.
-    2. If the URL contains ?courseId=<id>, app.js pre-selects that course.
-    3. On submit (data-form="assessment"), app.js:
-         a. Reads all field values.
-         b. Creates a new assessment object and appends it to the chosen
-            course's assessments array in localStorage.
-         c. Shows a success message in #assessmentFeedback and redirects
-            back to course-details.html?id=<courseId>.
-
-  FORM FIELDS:
-    - course      → <select> populated at runtime by app.js from localStorage;
-                    required – every assessment must belong to a course
-    - title       → free-text name of the assessment (e.g., "Assignment 2")
-    - type        → category dropdown: Assignment | Quiz | Project | Exam
-                    (fixed options matching the common academic assessment types)
-    - weight (%)  → percentage contribution to final grade; min 0, max 100
-                    NOTE: app.js does NOT currently enforce that weights for
-                    a course sum to 100% (that validation is in the admin
-                    template builder, not here)
-    - dueDate     → date picker; used to sort upcoming assessments on the dashboard
-    - notes       → optional free-text area for extra context or instructions
-
-  FEEDBACK:
-    #assessmentFeedback → app.js writes success or validation error messages here.
-
-  STRUCTURE:
-    <header>  → shared sticky navigation
-    <main>
-      <section.page-header>    → title + subtitle
-      <form data-form="assessment"> → single-card submission form
-    <footer>  → copyright line
--->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -60,7 +10,6 @@
   <script src="assets/app.js" defer></script>
 </head>
 <body>
-  <!-- Shared navigation – see index.html for full nav comments -->
   <header>
     <nav class="primary-nav" data-nav>
                   <a class="brand" href="index.html">
@@ -82,27 +31,18 @@
       </ul>
     </nav>
   </header>
-
   <main class="container">
     <section class="page-header">
       <h1>Assessment Submission</h1>
       <p>Submit coursework details, weight, and due dates.</p>
     </section>
-
-    <!-- data-form="assessment" → app.js registers a submit handler for this form -->
     <form class="card" data-form="assessment">
-
-      <!-- Course selector: app.js fills <option> elements from localStorage.
-           If ?courseId= is present in the URL, that course is pre-selected.  -->
       <label>Course
         <select name="course" required></select>
       </label>
-
       <label>Assessment Title
         <input type="text" name="title" required />
       </label>
-
-      <!-- Fixed type list matches the categories in the admin templates -->
       <label>Assessment Type
         <select name="type" required>
           <option value="assignment">Assignment</option>
@@ -111,30 +51,19 @@
           <option value="exam">Exam</option>
         </select>
       </label>
-
-      <!-- Weight contributes to grade calculation; max="100" prevents obvious
-           errors but app.js does not currently validate sum across a course  -->
       <label>Weight (%)
         <input type="number" name="weight" min="0" max="100" step="1" required />
       </label>
-
-      <!-- Due date drives the "Upcoming Assessments" sort order on the dashboard -->
       <label>Due Date
         <input type="date" name="dueDate" required />
       </label>
-
-      <!-- Optional: extra instructions or context for this assessment -->
       <label>Notes
         <textarea name="notes" rows="4" placeholder="Provide extra context"></textarea>
       </label>
-
       <button type="submit" class="btn">Submit Assessment</button>
-
-      <!-- app.js writes success or error messages here after form submission -->
       <p class="helper-text" id="assessmentFeedback"></p>
     </form>
   </main>
-
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>

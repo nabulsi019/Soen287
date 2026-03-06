@@ -1,78 +1,6 @@
+<!-- Yousef Yousef 40299095-->
+
 <!DOCTYPE html>
-<!--
-  FILE: course-details.html
-  PAGE: Course Details & Assessment Management (protected – students only)
-  COURSE: SOEN 287 – Web Programming
-
-  PURPOSE:
-    Displays detailed information for a single course and lets the student
-    manage (add, edit, delete) assessments for that course. The course is
-    identified by a query-string parameter: course-details.html?id=<courseId>.
-    app.js reads this ID on load, fetches the matching course from localStorage,
-    and populates every placeholder element on the page.
-
-  HOW THE PAGE IS LOADED:
-    1. User clicks a course link from student-dashboard.html or courses.html.
-    2. The link appends ?id=<courseId> to the URL.
-    3. app.js reads location.search, extracts the ID, and fetches the course
-       object from localStorage.
-    4. All #placeholder elements below are filled in dynamically.
-
-  DYNAMIC ELEMENTS (populated by app.js):
-    - #courseTitle          → course name (e.g., "Web Programming")
-    - #courseSummary        → brief one-line summary from the course record
-    - #courseCode           → course code (e.g., "SOEN 287")
-    - #courseCredits        → number of credits (e.g., "3 credits")
-    - #courseTerm           → term (e.g., "Winter 2026")
-    - #courseAverageValue   → computed average: sum(earned) / sum(total) × 100
-    - #courseAverageBar     → inline style "width: X%" updated to match average
-    - #courseDescription    → full description from the course/catalog record
-    - #courseAssessmentRows → <tbody> rows, one per assessment
-    - #learningOutcomes     → <ul> items from the course's learning outcomes array
-
-  PROGRESS BAR (ARIA):
-    The .progress-track div uses role="progressbar" with aria-valuemin,
-    aria-valuemax, and aria-valuenow attributes so screen readers can announce
-    the student's current average correctly.
-
-  ASSESSMENTS TABLE: #courseAssessmentRows
-    Each row shows: Title | Category | Due Date | Status badge | Score | Actions
-    Actions per row:
-      - "Edit"   → app.js fills the Edit Assessment form with that row's data.
-      - "Delete" → app.js removes the assessment from localStorage and re-renders.
-
-  EDIT ASSESSMENT FORM: data-form="assessment-edit"
-    - assessmentId (hidden) → empty = add new; filled by Edit button = update.
-    - category field uses a <datalist> (id="assessmentCategories") to offer
-      common suggestions (Assignment, Lab, Quiz, Exam) while still allowing
-      free-text entry.
-    - earned marks is Optional — a student can record an assessment before
-      knowing their grade.
-    - status "completed" marks the assessment as done; "pending" keeps it in
-      the upcoming assessments list on the dashboard.
-    - "Clear" (data-action="reset-assessment-form") resets all fields.
-    - #assessmentFormFeedback shows save confirmation or validation errors.
-
-  ADD ASSESSMENT LINK: #addAssessmentLink
-    Navigates to assessment-form.html with the courseId pre-appended as a
-    query param by app.js, so the new-assessment form knows which course to
-    attach the record to.
-
-  LEARNING OUTCOMES: #learningOutcomes
-    app.js renders a <li> per outcome from the course record. If none are
-    stored, a placeholder message is shown.
-
-  STRUCTURE:
-    <header>  → shared sticky navigation
-    <main>
-      <section.page-header>          → course meta + progress bar
-      <section.layout.course-details-grid>
-        <article> Description card
-        <article> Assessments table card
-        <article> Edit Assessment form card
-        <article.full-span> Learning Outcomes card
-    <footer>  → copyright line
--->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -82,7 +10,6 @@
   <script src="assets/app.js" defer></script>
 </head>
 <body>
-  <!-- Shared navigation – see index.html for full nav comments -->
   <header>
     <nav class="primary-nav" data-nav>
                   <a class="brand" href="index.html">
@@ -104,29 +31,15 @@
       </ul>
     </nav>
   </header>
-
   <main class="container">
-    <!-- PAGE HEADER – course identity + live average progress bar
-         All elements start as placeholders; app.js overwrites them after
-         reading the course from localStorage via the ?id= query param.     -->
     <section class="page-header">
-      <!-- app.js sets innerText to the real course name -->
       <h1 id="courseTitle">Course Title Placeholder</h1>
-      <!-- One-line summary from the course record -->
       <p id="courseSummary">High-level summary of the course.</p>
-
-      <!-- Meta chips: code, credits, term – all filled by app.js -->
       <div class="meta">
         <span id="courseCode">COMP 000</span>
         <span id="courseCredits">3 credits</span>
         <span id="courseTerm">Winter 2026</span>
       </div>
-
-      <!-- Progress bar showing the student's current weighted average.
-           app.js computes: sum(earned) / sum(total) * 100 and updates:
-             - #courseAverageValue  → the "XX%" label text
-             - #courseAverageBar    → style="width: XX%"
-             - aria-valuenow        → for screen reader accessibility     -->
       <div class="progress" id="courseAverageSummary">
         <div class="progress-label">
           <span>Current Average</span>
@@ -137,25 +50,14 @@
         </div>
       </div>
     </section>
-
-    <!-- DETAIL GRID – four cards in a responsive CSS Grid layout -->
     <section class="layout course-details-grid">
-
-      <!-- Card 1: Course Description
-           app.js fills #courseDescription from the catalog or custom record. -->
       <article class="card">
         <h2>Description</h2>
         <p id="courseDescription">Detailed description placeholder.</p>
       </article>
-
-      <!-- Card 2: Assessments Table
-           #courseAssessmentRows is populated by app.js with one <tr> per
-           assessment. The "Add Assessment" link passes the courseId as a
-           query param so assessment-form.html pre-selects this course.     -->
       <article class="card">
         <div class="card-header">
           <h2>Assessments</h2>
-          <!-- app.js appends ?courseId=X to this href before the user clicks -->
           <a class="btn btn-secondary" id="addAssessmentLink" href="assessment-form.html">Add Assessment</a>
         </div>
         <div class="table-wrapper">
@@ -170,27 +72,17 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <!-- Rows injected dynamically; empty until app.js runs -->
             <tbody id="courseAssessmentRows"></tbody>
           </table>
         </div>
       </article>
-
-      <!-- Card 3: Edit Assessment Form
-           Clicking "Edit" in the table above populates this form via app.js.
-           assessmentId (hidden) determines create-vs-update behaviour.       -->
       <article class="card">
         <h2>Edit Assessment</h2>
         <form data-form="assessment-edit">
-          <!-- Empty = create new assessment; app.js fills this on "Edit" click -->
           <input type="hidden" name="assessmentId" />
-
           <label>Title
             <input type="text" name="title" required />
           </label>
-
-          <!-- <datalist> provides autocomplete suggestions while allowing
-               any custom category the student types in freely             -->
           <label>Category
             <input type="text" name="category" list="assessmentCategories" placeholder="Assignment, Lab, Quiz..." required />
             <datalist id="assessmentCategories">
@@ -200,49 +92,34 @@
               <option value="Exam"></option>
             </datalist>
           </label>
-
           <label>Due Date
             <input type="date" name="dueDate" required />
           </label>
-
-          <!-- earned is Optional: student can log the assessment before grading -->
           <label>Earned Marks
             <input type="number" name="earned" min="0" step="0.1" placeholder="Optional" />
           </label>
-
           <label>Total Marks
             <input type="number" name="total" min="0" step="0.1" required />
           </label>
-
-          <!-- "completed" removes from upcoming list; "pending" keeps it there -->
           <label>Status
             <select name="status" required>
               <option value="pending">Pending</option>
               <option value="completed">Completed</option>
             </select>
           </label>
-
           <div class="form-actions">
             <button type="submit" class="btn">Save Changes</button>
-            <!-- Clears the form and empties assessmentId (next save = new record) -->
             <button type="button" class="btn btn-secondary" data-action="reset-assessment-form">Clear</button>
           </div>
-
-          <!-- Starts with instructional text; app.js replaces with feedback -->
           <p class="helper-text" id="assessmentFormFeedback">Select an assessment to edit.</p>
         </form>
       </article>
-
-      <!-- Card 4: Learning Outcomes (spans full grid width via .full-span)
-           app.js populates #learningOutcomes with <li> items from the course
-           object. Shown as a static informational list; no user interaction.  -->
       <article class="card full-span">
         <h2>Learning Outcomes</h2>
         <ul id="learningOutcomes"></ul>
       </article>
     </section>
   </main>
-
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>

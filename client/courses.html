@@ -1,72 +1,6 @@
+<!-- Yousef Yousef 40299095-->
+
 <!DOCTYPE html>
-<!--
-  FILE: courses.html
-  PAGE: My Courses – Student Course Management (protected – students only)
-  COURSE: SOEN 287 – Web Programming
-
-  PURPOSE:
-    Lets a logged-in student add new courses to their personal list, edit
-    existing ones, remove them, and optionally create a course pre-filled
-    from an admin-defined assessment template. Each student's course data
-    is stored separately in localStorage, keyed to their email address,
-    so students only ever see their own records.
-
-  ACCESS CONTROL:
-    app.js guards this page on load; users without a student session are
-    redirected to login.html.
-
-  LAYOUT:
-    Uses a two-column .layout grid (form on the left, table on the right).
-    On narrow screens (≤ 900 px) the columns stack vertically.
-
-  FORM: data-form="course-manage"
-    app.js handles both CREATE and UPDATE through the same form:
-      - courseId (hidden) is empty → new course is created.
-      - courseId (hidden) is populated → existing course is updated.
-        (app.js fills this field when the user clicks "Edit" in the table.)
-
-    Fields:
-      - code        → unique course code (e.g., "SOEN 287"); required
-      - name        → full course name; required
-      - instructor  → instructor's name; required
-      - term        → academic term (e.g., "Winter 2026"); required
-      - enabled     → checkbox; unchecked courses are hidden from the dashboard
-
-    Buttons:
-      - "Save Course"  → submits the form; app.js saves to localStorage and
-                         refreshes #studentCourseTable.
-      - "Clear" (data-action="reset-course-form") → app.js clears all fields
-                         and resets courseId so the next submit creates a new record.
-
-    Feedback:
-      - #courseFormFeedback → success/error message shown below the buttons.
-      - #catalogRuleMessage (.alert.info) → static informational note explaining
-        that students can use any enabled admin-catalog code OR invent a new code
-        for a custom course.
-
-  TEMPLATE SECTION (data-repeat="components"):
-    - data-select="course-template" <select> → app.js populates this dropdown
-      at runtime with all templates saved by the admin in admin-templates.html.
-    - "Create from Template" button (data-action="apply-template") → app.js
-      reads the selected template and pre-fills the form fields (code, name)
-      and automatically adds assessment components from the template so the
-      student does not have to manually enter each one.
-
-  COURSE TABLE: #studentCourseTable (<tbody>)
-    app.js populates this table with the student's courses from localStorage.
-    Each row has:
-      - Code, Name, Instructor, Term, Status (Enabled/Disabled badge)
-      - Actions: "Edit" (populates the form) and "Delete" (removes the record)
-
-  STRUCTURE:
-    <header>  → shared sticky navigation
-    <main>
-      <section.page-header>        → title + description
-      <section.layout>
-        <form data-form="course-manage"> → add/edit form card
-        <section.card>                   → course list table
-    <footer>  → copyright line
--->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -76,7 +10,6 @@
   <script src="assets/app.js" defer></script>
 </head>
 <body>
-  <!-- Shared navigation – see index.html for full nav comments -->
   <header>
     <nav class="primary-nav" data-nav>
                   <a class="brand" href="index.html">
@@ -98,29 +31,15 @@
       </ul>
     </nav>
   </header>
-
   <main class="container">
     <section class="page-header">
       <h1>My Courses</h1>
       <p>Add, edit, or remove courses. Only your own records are visible.</p>
     </section>
-
-    <!-- Two-column layout: form (left) + table (right); stacks on mobile -->
     <section class="layout course-management">
-
-      <!-- ADD / EDIT FORM
-           data-form="course-manage" → app.js submit handler.
-           When courseId (hidden) is empty, a new course is created.
-           When app.js fills courseId via the Edit button, saving updates
-           the existing record instead. -->
       <form class="card" data-form="course-manage">
         <h2>Add / Edit Course</h2>
-
-        <!-- Hidden field: empty = create new; filled by app.js = edit existing -->
         <input type="hidden" name="courseId" />
-
-        <!-- Course code must be unique per student; can match an admin catalog
-             code or be a brand-new code for a custom course -->
         <label>Course Code
           <input type="text" name="code" placeholder="e.g., SOEN 287" required />
         </label>
@@ -133,22 +52,25 @@
         <label>Term
           <input type="text" name="term" placeholder="e.g., Winter 2026" required />
         </label>
-
+        <label class="checkbox">
+          <input type="checkbox" name="enabled" checked />
+          <span>Enabled</span>
+        </label>
         <div class="form-actions">
           <button type="submit" class="btn">Save Course</button>
-          <!-- data-action="reset-course-form" → app.js clears all fields
-               and empties the hidden courseId so the next submit creates new -->
           <button type="button" class="btn btn-secondary" data-action="reset-course-form">Clear</button>
         </div>
-
-        <!-- app.js writes "Course saved!" or error messages here -->
         <p class="helper-text" id="courseFormFeedback"></p>
+        <p class="alert info" id="catalogRuleMessage">You may add any enabled catalog course or create a custom course by using a new code.</p>
+        <div class="template-actions">
+          <label>Create from Template
+            <select data-select="course-template">
+              <option value="">Select template</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn-secondary" data-action="apply-template">Create from Template</button>
+        </div>
       </form>
-
-      <!-- COURSE LIST TABLE
-           app.js renders a row per course in #studentCourseTable.
-           Columns: Code | Name | Instructor | Term | Status | Actions
-           "Edit" fills the form above; "Delete" removes from localStorage. -->
       <section class="card">
         <h2>Course List</h2>
         <div class="table-wrapper">
@@ -163,14 +85,12 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <!-- Populated entirely by app.js from localStorage -->
             <tbody id="studentCourseTable"></tbody>
           </table>
         </div>
       </section>
     </section>
   </main>
-
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>

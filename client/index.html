@@ -1,70 +1,21 @@
+<!-- Yousef Yousef 40299095-->
+
 <!DOCTYPE html>
-<!--
-  FILE: index.html
-  PAGE: Landing / Home Page
-  COURSE: SOEN 287 – Web Programming
-
-  PURPOSE:
-    This is the entry point of the Smart Course Companion web application.
-    It introduces the platform to all visitors (students, admins, and guests)
-    with a hero section, a call-to-action group, and three feature highlight cards.
-
-  KEY FEATURES ON THIS PAGE:
-    1. Shared sticky navigation bar (used across all pages).
-       - The <nav> uses data-nav and data-nav-toggle attributes; app.js reads
-         these to dynamically show/hide links based on the logged-in user's role.
-       - data-role="public"  → always visible
-       - data-role="student" → only shown when a student is logged in
-       - data-role="admin"   → only shown when an admin is logged in
-
-    2. Hero section (.hero.hero-centered)
-       - Displays the Concordia logo (hidden gracefully via onerror if file missing).
-       - "Get Started" → navigates to register.html
-       - "Log In" → navigates to login.html
-       - "Seed Demo Data" button → triggers a JavaScript handler (data-action="seed-demo")
-         in app.js that populates localStorage with demo accounts, courses, and assessments
-         so the TA can test all features immediately without manual data entry.
-       - #demoSeedFeedback paragraph is updated by app.js with a success/error message
-         after seeding completes.
-
-    3. Highlights section
-       - Three <article> cards briefly describe the platform's audience and capabilities.
-       - Styled via the .highlights grid in styles.css (auto-fit, responsive).
-
-  STRUCTURE:
-    <header>   → sticky navigation bar shared by every page
-    <main>     → two sections: hero (CTA) + highlights (feature cards)
-    <footer>   → copyright line
-
-  DEPENDENCIES:
-    - assets/styles.css  → all visual styling (shared across pages)
-    - assets/app.js      → all interactivity; loaded with `defer` so HTML parses first
--->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Course Companion | Home</title>
-  <!-- Shared stylesheet – defines CSS custom properties, layout, components -->
   <link rel="stylesheet" href="assets/styles.css" />
-  <!-- Single JavaScript entry point – handles all pages via data-* attributes -->
   <script src="assets/app.js" defer></script>
 </head>
 <body>
-  <!-- =====================================================================
-       HEADER / NAVIGATION
-       The nav is shared verbatim on every page. app.js reads data-role
-       attributes on each <li> to show only the links appropriate for the
-       current user's session role (public / student / admin).
-       ===================================================================== -->
   <header>
     <nav class="primary-nav" data-nav>
                   <a class="brand" href="index.html">
-        <!-- Logo fails silently (onerror) if the image file is absent -->
         <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
         <span>Smart Course Companion</span>
       </a>
-      <!-- Hamburger toggle – only visible on screens ≤ 900 px (see styles.css media query) -->
       <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
         <span></span>
         <span></span>
@@ -80,14 +31,7 @@
       </ul>
     </nav>
   </header>
-
   <main class="container">
-    <!-- ==================================================================
-         HERO SECTION
-         Full-width centred card with the app logo, tagline, and three
-         call-to-action buttons. app.js listens for data-action="seed-demo"
-         and writes mock data to localStorage when that button is clicked.
-         ================================================================== -->
     <section class="hero hero-centered">
       <img src="assets/img/concordia-logo.png" alt="Concordia University Logo" class="brand-logo" onerror="this.style.display='none'" />
       <h1>Smart Course Companion</h1>
@@ -95,18 +39,10 @@
       <div class="cta-group">
         <a class="btn" href="register.html">Get Started</a>
         <a class="btn btn-secondary" href="login.html">Log In</a>
-        <!-- Seed Demo Data: populates localStorage with sample users/courses/assessments -->
         <button class="btn btn-secondary" type="button" data-action="seed-demo">Seed Demo Data</button>
       </div>
-      <!-- Feedback paragraph – app.js sets its text after seeding succeeds or fails -->
       <p class="helper-text" id="demoSeedFeedback">Seeds the latest mock data for demos.</p>
     </section>
-
-    <!-- ==================================================================
-         HIGHLIGHTS SECTION
-         Three short feature-summary cards arranged in a responsive grid.
-         No JavaScript interaction – purely informational / presentational.
-         ================================================================== -->
     <section class="highlights">
       <article>
         <h2>Students</h2>
@@ -122,8 +58,6 @@
       </article>
     </section>
   </main>
-
-  <!-- Footer – identical on every page -->
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>
