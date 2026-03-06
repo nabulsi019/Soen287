@@ -1,4 +1,45 @@
 <!DOCTYPE html>
+<!--
+  FILE: register.html
+  PAGE: Student Registration Page
+  COURSE: SOEN 287 – Web Programming
+
+  PURPOSE:
+    Allows new users to create a student account. All submitted data is
+    stored in localStorage by app.js (no backend server exists in this
+    assignment). Registered users can then log in via login.html.
+
+  HOW REGISTRATION WORKS (client-side only):
+    - app.js intercepts the form submit (data-form="register").
+    - It validates that:
+        1. All required fields are filled.
+        2. Password meets the minimum length of 8 characters.
+        3. "Password" and "Confirm Password" fields match.
+        4. The email address is not already taken (checked against localStorage).
+    - On success, the new user object { firstName, lastName, email, password,
+      role: "student" } is saved to localStorage and the user is redirected
+      to login.html.
+    - #registerFeedback displays inline error or success messages.
+
+  NOTE ON ROLES:
+    Registration is intentionally limited to the "student" role only.
+    Admin accounts are pre-seeded via the "Seed Demo Data" button on
+    index.html and cannot be self-registered by end users.
+
+  FORM FIELDS:
+    - firstName       → user's first name (text, required)
+    - lastName        → user's last name (text, required)
+    - email           → unique identifier; browser validates format
+    - password        → minimum 8 characters; stored as plain text
+                        (NOTE: hashing is listed as a future improvement)
+    - confirmPassword → must exactly match the password field value
+
+  STRUCTURE:
+    <header>   → shared sticky navigation
+    <main class="container auth-page"> → centred single-column layout
+      <form data-form="register">      → registration card handled by app.js
+    <footer>   → copyright line
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -8,6 +49,7 @@
   <script src="assets/app.js" defer></script>
 </head>
 <body>
+  <!-- Shared navigation – see index.html for full nav comments -->
   <header>
     <nav class="primary-nav" data-nav>
                   <a class="brand" href="index.html">
@@ -29,28 +71,45 @@
       </ul>
     </nav>
   </header>
+
+  <!-- auth-page centres the card and constrains its max-width to 460 px -->
   <main class="container auth-page">
     <h1>Register</h1>
+
+    <!-- data-form="register" → app.js attaches a submit listener to this form -->
     <form class="card" data-form="register">
+
+      <!-- Collected to personalise the student dashboard greeting -->
       <label>First Name
         <input type="text" name="firstName" required />
       </label>
       <label>Last Name
         <input type="text" name="lastName" required />
       </label>
+
+      <!-- Email acts as the unique account identifier across localStorage records -->
       <label>Email
         <input type="email" name="email" required />
       </label>
+
+      <!-- minlength="8" enforced by the browser before submit; app.js also validates -->
       <label>Password
         <input type="password" name="password" required minlength="8" />
       </label>
+
+      <!-- app.js compares this value against the password field before saving -->
       <label>Confirm Password
         <input type="password" name="confirmPassword" required minlength="8" />
       </label>
+
       <button type="submit" class="btn">Create Account</button>
+
+      <!-- Populated by app.js: shows errors (duplicate email, password mismatch)
+           or a success message followed by a redirect to login.html -->
       <p class="helper-text" id="registerFeedback"></p>
     </form>
   </main>
+
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>

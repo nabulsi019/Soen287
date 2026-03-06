@@ -1,4 +1,40 @@
 <!DOCTYPE html>
+<!--
+  FILE: login.html
+  PAGE: Login / Authentication Page
+  COURSE: SOEN 287 – Web Programming
+
+  PURPOSE:
+    Allows existing users (students or admins) to sign in to the application.
+    On successful login, app.js saves the user's role and email to localStorage
+    and redirects them to the appropriate dashboard:
+      - role="student" → student-dashboard.html
+      - role="admin"   → admin-dashboard.html
+
+  HOW AUTHENTICATION WORKS (client-side only):
+    - There is no backend server. All user records are stored in localStorage
+      (seeded either via the "Seed Demo Data" button on index.html or created
+      through register.html).
+    - app.js listens for the form's "submit" event (data-form="login"),
+      reads the email/password/role from the form fields, looks up matching
+      records in localStorage, and sets a session key if credentials match.
+    - The password field uses minlength="8" for browser-level validation.
+    - #loginFeedback is populated by app.js with an error message (e.g.,
+      "Invalid credentials") or a success message before redirecting.
+
+  FORM FIELDS:
+    - email         → type="email" – browser validates email format automatically
+    - password      → type="password" – hides input; minlength="8" enforced
+    - role          → <select> with "student" / "admin" options; determines
+                      which dashboard the user is sent to and which nav links
+                      become visible after login
+
+  STRUCTURE:
+    <header>   → shared sticky navigation
+    <main class="container auth-page"> → centred single-column layout
+      <form data-form="login">         → login card handled by app.js
+    <footer>   → copyright line
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -8,6 +44,7 @@
   <script src="assets/app.js" defer></script>
 </head>
 <body>
+  <!-- Shared navigation – see index.html for full nav comments -->
   <header>
     <nav class="primary-nav" data-nav>
                   <a class="brand" href="index.html">
@@ -29,26 +66,43 @@
       </ul>
     </nav>
   </header>
+
+  <!-- auth-page class centres the card vertically and constrains its width to 460 px -->
   <main class="container auth-page">
     <h1>Log In</h1>
+
+    <!-- data-form="login" → app.js registers a submit handler specifically for this form -->
     <form class="card" data-form="login">
+
+      <!-- Browser enforces valid email format before the form can be submitted -->
       <label>Email
         <input type="email" name="email" required />
       </label>
+
+      <!-- type="password" masks input; minlength="8" is also checked server-side
+           in a production system, but here it is purely client-side validation -->
       <label>Password
         <input type="password" name="password" required minlength="8" />
       </label>
+
+      <!-- Role selector determines post-login redirect and navbar visibility:
+           "student" → student-dashboard.html
+           "admin"   → admin-dashboard.html                                    -->
       <label>Role
         <select name="role" required>
           <option value="student">Student</option>
           <option value="admin">Admin</option>
         </select>
       </label>
+
       <button type="submit" class="btn">Sign In</button>
       <p class="helper-text">No account? <a href="register.html">Register here</a>.</p>
+
+      <!-- app.js writes success/error messages here; starts empty -->
       <p class="helper-text" id="loginFeedback"></p>
     </form>
   </main>
+
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>

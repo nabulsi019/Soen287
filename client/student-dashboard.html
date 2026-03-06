@@ -1,4 +1,54 @@
 <!DOCTYPE html>
+<!--
+  FILE: student-dashboard.html
+  PAGE: Student Dashboard (protected – students only)
+  COURSE: SOEN 287 – Web Programming
+
+  PURPOSE:
+    The primary landing page for logged-in students. It gives a high-level
+    overview of their academic status: which courses they are enrolled in,
+    which assessments are coming up, and a visual progress snapshot across
+    all their active courses.
+
+  ACCESS CONTROL:
+    app.js checks localStorage for a valid session with role="student" when
+    this page loads. If no session exists or the role is "admin", the user
+    is redirected back to login.html. This is client-side route guarding
+    (no server-side enforcement in this assignment).
+
+  DYNAMIC CONTENT (all rendered by app.js on DOMContentLoaded):
+    1. #activeCoursesList  (<ul>)
+       - Reads the logged-in student's courses from localStorage.
+       - Renders a <li> per enabled/active course with a link to
+         course-details.html?id=<courseId>.
+       - Shows "No active courses" if the list is empty.
+
+    2. #upcomingAssessments  (<ul>)
+       - Reads all assessments across the student's courses.
+       - Filters to those with status="pending" and a future due date.
+       - Sorts by due date (ascending) and lists the next upcoming items.
+       - Shows "No upcoming assessments" if none found.
+
+    3. #progressChart  (<div class="chart-list"> with aria-live="polite")
+       - For each active course, calculates:
+           earned marks / total marks = course average (%)
+       - Renders a labelled progress bar per course using the
+         .progress / .progress-track / .progress-fill pattern from styles.css.
+       - aria-live="polite" announces updates to screen readers without
+         interrupting the user.
+
+  LAYOUT:
+    .dashboard-grid uses CSS Grid (auto-fit, minmax 260 px) so the three
+    cards reflow naturally on smaller screens. The progress card uses the
+    .full-span class to stretch across all grid columns.
+
+  STRUCTURE:
+    <header>  → shared sticky navigation
+    <main>
+      <section.page-header>    → page title and subtitle
+      <section.dashboard-grid> → three summary cards
+    <footer>  → copyright line
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -8,6 +58,7 @@
   <script src="assets/app.js" defer></script>
 </head>
 <body>
+  <!-- Shared navigation – see index.html for full nav comments -->
   <header>
     <nav class="primary-nav" data-nav>
                   <a class="brand" href="index.html">
@@ -29,26 +80,44 @@
       </ul>
     </nav>
   </header>
+
   <main class="container">
+    <!-- Page header: title + brief description -->
     <section class="page-header">
       <h1>Welcome, Student</h1>
       <p>Overview of current courses, assessments, and upcoming tasks.</p>
     </section>
+
+    <!-- Three-card dashboard grid – all populated dynamically by app.js -->
     <section class="dashboard-grid">
+
+      <!-- Card 1: Active Courses
+           app.js populates #activeCoursesList with <li> elements linking
+           to course-details.html for each of the student's active courses. -->
       <article class="card">
         <h2>Active Courses</h2>
         <ul id="activeCoursesList"></ul>
       </article>
+
+      <!-- Card 2: Upcoming Assessments
+           app.js reads pending assessments across all courses, sorts by
+           due date, and renders them here as a prioritised task list. -->
       <article class="card">
         <h2>Upcoming Assessments</h2>
         <ul id="upcomingAssessments"></ul>
       </article>
+
+      <!-- Card 3: Progress Snapshot (spans all grid columns via .full-span)
+           app.js renders one labelled progress bar per course showing the
+           student's current average (earned ÷ total marks × 100).
+           aria-live="polite" ensures screen reader accessibility. -->
       <article class="card full-span">
         <h2>Progress Snapshot</h2>
         <div id="progressChart" class="chart-list" aria-live="polite"></div>
       </article>
     </section>
   </main>
+
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>

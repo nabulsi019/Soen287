@@ -1,4 +1,63 @@
 <!DOCTYPE html>
+<!--
+  FILE: admin-stats.html
+  PAGE: Analytics & Statistics (protected – admins only)
+  COURSE: SOEN 287 – Web Programming
+
+  PURPOSE:
+    Provides the admin with a read-only overview of platform-wide statistics
+    aggregated from all student localStorage records. No forms or editable
+    controls exist on this page — it is purely informational and diagnostic.
+
+  ACCESS CONTROL:
+    app.js enforces admin-only access on page load; non-admins are redirected
+    to login.html.
+
+  IMPORTANT NOTE ON DATA SOURCE:
+    All statistics on this page are computed CLIENT-SIDE from localStorage.
+    In a production system these would be server-side queries against a
+    database. Here, app.js reads every user record and their associated
+    course/assessment arrays to produce the numbers displayed.
+
+  DYNAMIC ELEMENTS (all populated by app.js on DOMContentLoaded):
+
+    1. #totalStudentsCount  (.stat-value)
+       - Counts all users in localStorage whose role === "student".
+       - Displayed as a large number using the .stat-value style rule
+         (2.5 rem, bold) for quick at-a-glance reading.
+       - Starts as "--" and is replaced once app.js runs.
+
+    2. #completionSummary  (.progress)
+       - Aggregates assessments across ALL students and ALL courses.
+       - Computes: completedCount / totalCount × 100 = overall completion %.
+       - app.js renders the standard progress bar pattern inside this div:
+           .progress-label   → "X of Y completed (Z%)"
+           .progress-track   → background track
+           .progress-fill    → coloured fill bar with transition animation
+
+    3. #courseCompletionList  (.chart-list)
+       - For each unique course code found across all student records,
+         app.js computes how many assessments have been completed vs. total
+         and renders a labelled progress bar for each course.
+       - Uses the same .progress / .progress-track / .progress-fill pattern
+         as the student dashboard progress snapshot.
+       - This gives the admin a per-course breakdown of student progress.
+
+  LAYOUT:
+    .dashboard-grid with auto-fit CSS Grid. The Per-Course Completion card
+    uses .full-span to stretch the full width so each bar has sufficient
+    horizontal space for readability.
+
+  STRUCTURE:
+    <header>  → shared sticky navigation
+    <main>
+      <section.page-header>     → Admin badge + title + subtitle
+      <section.dashboard-grid>
+        Total Students card     (single stat number)
+        Assessments Completed   (overall progress bar)
+        Per-Course Completion   (full-span chart list)
+    <footer>  → copyright line
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -8,6 +67,7 @@
   <script src="assets/app.js" defer></script>
 </head>
 <body>
+  <!-- Shared navigation – see index.html for full nav comments -->
   <header>
     <nav class="primary-nav" data-nav>
                   <a class="brand" href="index.html">
@@ -29,29 +89,51 @@
       </ul>
     </nav>
   </header>
+
   <main class="container">
     <section class="page-header">
       <span class="page-tag">Admin</span>
       <h1>Analytics & Stats</h1>
       <p>Review participation, completion rates, and workload distribution.</p>
     </section>
+
     <section class="dashboard-grid">
+
+      <!-- Card 1: Total Students
+           app.js counts all localStorage users where role === "student"
+           and writes the integer to #totalStudentsCount.
+           Starts as "--" (indicates loading/no data yet). -->
       <article class="card">
         <h2>Total Students</h2>
+        <!-- .stat-value renders the number large (2.5rem bold) for quick reading -->
         <p class="stat-value" id="totalStudentsCount">--</p>
         <p class="helper-text">Count of registered users with the student role.</p>
       </article>
+
+      <!-- Card 2: Assessments Completed (platform-wide)
+           app.js aggregates all assessments across all students,
+           counts status="completed" vs. total, then renders a progress
+           bar with label into #completionSummary (.progress container). -->
       <article class="card">
         <h2>Assessments Completed</h2>
+        <!-- app.js injects .progress-label + .progress-track + .progress-fill here -->
         <div id="completionSummary" class="progress"></div>
         <p class="helper-text">Aggregated across all student assessments.</p>
       </article>
+
+      <!-- Card 3: Per-Course Completion (full-width)
+           app.js groups all student assessments by course code, computes
+           each course's completion rate, and renders a labelled progress
+           bar per course into #courseCompletionList (.chart-list container).
+           .full-span stretches this card across all grid columns. -->
       <article class="card full-span">
         <h2>Per-Course Completion</h2>
+        <!-- Each child bar is injected by app.js using the shared progress pattern -->
         <div id="courseCompletionList" class="chart-list"></div>
       </article>
     </section>
   </main>
+
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>
