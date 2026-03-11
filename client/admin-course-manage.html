@@ -1,0 +1,140 @@
+<!-- 
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Courses | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul>
+        <li><a href="index.html" data-role="public">Home Page</a></li>
+        <li><a href="login.html" data-role="public">Login</a></li>
+        <li><a href="register.html" data-role="public">Register</a></li>
+        <li><a href="student-dashboard.html" data-role="student">Student Dashboard</a></li>
+        <li><a href="admin-dashboard.html" data-role="admin">Admin Dashboard</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container">
+    <section class="page-header">
+      <span class="page-tag">Admin</span>
+      <h1>Manage Courses</h1>
+      <p>Enable, disable, edit, or delete existing course offerings.</p>
+    </section>
+    <section class="card" id="adminCourseList">
+      <div class="card-header-row">
+        <h2>Course List</h2>
+        <a href="admin-courses.html" class="btn">+ Create Course</a>
+      </div>
+      <div class="table-wrapper">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Title</th>
+              <th>Credits</th>
+              <th>Term</th>
+              <th>Enabled</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminCourseTable"></tbody>
+        </table>
+        <p id="noCoursesMsg" class="helper-text" style="display:none;">No courses found. Create one first.</p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+  <script>
+    // Maps term keys to display labels
+    const termLabels = {
+      'winter-2026': 'Winter 2026',
+      'summer-2026': 'Summer 2026',
+      'fall-2026':   'Fall 2026',
+      'winter-2027': 'Winter 2027'
+    };
+
+    function loadCourses() {
+      return JSON.parse(localStorage.getItem('adminCourses') || '[]');
+    }
+
+    function saveCourses(courses) {
+      localStorage.setItem('adminCourses', JSON.stringify(courses));
+    }
+
+    function renderTable() {
+      const courses = loadCourses();
+      const tbody = document.getElementById('adminCourseTable');
+      const noMsg = document.getElementById('noCoursesMsg');
+      tbody.innerHTML = '';
+
+      if (courses.length === 0) {
+        noMsg.style.display = 'block';
+        return;
+      }
+      noMsg.style.display = 'none';
+
+      courses.forEach(function (c) {
+        const tr = document.createElement('tr');
+        // Enabled checkbox controls visibility to students on courses.html
+        tr.innerHTML =
+          '<td>' + c.code + '</td>' +
+          '<td>' + c.title + '</td>' +
+          '<td>' + c.credits + '</td>' +
+          '<td>' + (termLabels[c.term] || c.term) + '</td>' +
+          '<td><label class="checkbox"><input type="checkbox" ' + (c.enabled ? 'checked' : '') + ' data-id="' + c.id + '" data-action="toggle-course-enabled" /><span>Enabled</span></label></td>' +
+          '<td class="action-cell">' +
+            '<button type="button" class="btn btn-danger" data-id="' + c.id + '" data-action="delete-course">Delete</button>' +
+          '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Toggle course enabled/disabled state
+    document.getElementById('adminCourseTable').addEventListener('change', function (e) {
+      if (e.target.dataset.action === 'toggle-course-enabled') {
+        const id = Number(e.target.dataset.id);
+        const courses = loadCourses();
+        const course = courses.find(function (c) { return c.id === id; });
+        if (course) {
+          course.enabled = e.target.checked;
+          saveCourses(courses);
+        }
+      }
+    });
+
+    // Delete course from adminCourses list
+    document.getElementById('adminCourseTable').addEventListener('click', function (e) {
+      if (e.target.dataset.action === 'delete-course') {
+        const id = Number(e.target.dataset.id);
+        const courses = loadCourses().filter(function (c) { return c.id !== id; });
+        saveCourses(courses);
+        renderTable();
+      }
+    });
+
+    renderTable();
+  </script>
+</body>
+</html>

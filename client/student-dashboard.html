@@ -1,4 +1,9 @@
-<!-- Mark Nazlian 40300696-->
+<!-- 
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,7 +12,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Student Dashboard | Smart Course Companion</title>
   <link rel="stylesheet" href="assets/styles.css" />
-  <script src="assets/app.js" defer></script>
 </head>
 <body>
   <header>
@@ -22,11 +26,10 @@
         <span></span>
       </button>
       <ul>
-        <li><a href="index.html" data-role="public">Landing</a></li>
+        <li><a href="index.html" data-role="public">Home Page</a></li>
         <li><a href="login.html" data-role="public">Login</a></li>
         <li><a href="register.html" data-role="public">Register</a></li>
         <li><a href="student-dashboard.html" data-role="student">Student Dashboard</a></li>
-        <li><a href="courses.html" data-role="student">Courses</a></li>
         <li><a href="admin-dashboard.html" data-role="admin">Admin Dashboard</a></li>
       </ul>
     </nav>
@@ -38,7 +41,10 @@
     </section>
     <section class="dashboard-grid">
       <article class="card">
-        <h2>Active Courses</h2>
+        <div class="card-header-row">
+          <h2>Active Courses</h2>
+          <a href="courses.html" class="btn btn-secondary">Browse Courses</a>
+        </div>
         <ul id="activeCoursesList"></ul>
       </article>
       <article class="card">
@@ -46,7 +52,7 @@
         <ul id="upcomingAssessments"></ul>
       </article>
       <article class="card full-span">
-        <h2>Progress Snapshot</h2>
+        <h2>Progress Visualization</h2>
         <div id="progressChart" class="chart-list" aria-live="polite"></div>
       </article>
     </section>
@@ -54,5 +60,101 @@
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>
+  <script>
+    // Guard: redirect to login if no session exists
+    var _currentUser = JSON.parse(localStorage.getItem('scc_currentUser') || 'null');
+    if (!_currentUser) { window.location.href = 'login.html'; }
+
+    function getCurrentUserId() {
+      return _currentUser ? _currentUser.id : null;
+    }
+
+    // Returns only courses belonging to the logged-in user
+    function getMyCourses() {
+      var uid = getCurrentUserId();
+      return JSON.parse(localStorage.getItem('scc_myCourses') || '[]')
+        .filter(function (c) { return c.userId === uid; });
+    }
+
+    function getAssessmentsForCourse(courseId) {
+      return JSON.parse(localStorage.getItem('scc_assessments') || '[]')
+        .filter(function (a) { return a.courseId === courseId; });
+    }
+
+    // Calculates weighted average: total earned / total possible * 100
+    function calcAverage(assessments) {
+      var scored = assessments.filter(function (a) {
+        return a.earned !== null && a.earned !== '' && a.earned !== undefined && Number(a.total) > 0;
+      });
+      if (scored.length === 0) return null;
+      var earned   = scored.reduce(function (s, a) { return s + Number(a.earned); }, 0);
+      var possible = scored.reduce(function (s, a) { return s + Number(a.total);  }, 0);
+      return possible > 0 ? (earned / possible * 100).toFixed(1) : null;
+    }
+
+    // ── Active Courses ────────────────────────────────────────────
+    var courses  = getMyCourses();
+    var coursesList = document.getElementById('activeCoursesList');
+    if (courses.length === 0) {
+      coursesList.innerHTML = '<li class="helper-text">No courses yet. <a href="courses.html">Browse courses</a>.</li>';
+    } else {
+      courses.forEach(function (c) {
+        var li = document.createElement('li');
+        li.innerHTML = '<a href="course-details.html?id=' + c.id + '">' + c.code + ' — ' + c.name + '</a> <small>(' + c.term + ')</small>';
+        coursesList.appendChild(li);
+      });
+    }
+
+    // ── Upcoming Assessments ──────────────────────────────────────
+    // Collect all pending assessments across all courses, sorted by due date
+    var allPending = [];
+    courses.forEach(function (c) {
+      getAssessmentsForCourse(c.id).forEach(function (a) {
+        if (a.status === 'pending') {
+          allPending.push({ course: c.code, title: a.title, dueDate: a.dueDate, courseId: c.id });
+        }
+      });
+    });
+    allPending.sort(function (a, b) { return (a.dueDate || '').localeCompare(b.dueDate || ''); });
+
+    var upcomingList = document.getElementById('upcomingAssessments');
+    if (allPending.length === 0) {
+      upcomingList.innerHTML = '<li class="helper-text">No pending assessments.</li>';
+    } else {
+      allPending.slice(0, 8).forEach(function (a) { // show at most 8
+        var li = document.createElement('li');
+        li.innerHTML = '<a href="course-details.html?id=' + a.courseId + '">' + a.course + ' — ' + a.title + '</a>' + (a.dueDate ? ' <small>Due: ' + a.dueDate + '</small>' : '');
+        upcomingList.appendChild(li);
+      });
+    }
+
+    // ── Progress Visualization ────────────────────────────────────
+    // Renders a progress bar per course showing completion count
+    var chartDiv = document.getElementById('progressChart');
+    if (courses.length === 0) {
+      chartDiv.innerHTML = '<p class="helper-text">Enroll in courses to see your progress.</p>';
+    } else {
+      courses.forEach(function (c) {
+        var assessments = getAssessmentsForCourse(c.id);
+        var avg         = calcAverage(assessments);
+        var pct         = avg !== null ? avg : 0;
+        var total       = assessments.length;
+        var done        = assessments.filter(function (a) { return a.status === 'completed'; }).length;
+
+        var bar = document.createElement('div');
+        bar.className = 'progress';
+        bar.innerHTML =
+          '<div class="progress-label">' +
+            '<span><a href="course-details.html?id=' + c.id + '">' + c.code + ' — ' + c.name + '</a></span>' +
+            '<strong>' + (avg !== null ? avg + '%' : 'No marks yet') + '</strong>' +
+          '</div>' +
+          '<div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '">' +
+            '<div class="progress-fill" style="width:' + pct + '%;"></div>' +
+          '</div>' +
+          '<small>' + done + ' of ' + total + ' assessments completed</small>';
+        chartDiv.appendChild(bar);
+      });
+    }
+  </script>
 </body>
 </html>

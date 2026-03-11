@@ -1,7 +1,11 @@
-/*Mohammed AlNabulsi
-40302830
+/*
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
 */
 
+/* Global color tokens used throughout the app */
 :root {
   --primary: #7a1d3f;
   --primary-dark: #5c102c;
@@ -17,12 +21,14 @@
   --error: #b42318;
 }
 
+/* Apply border-box sizing to all elements */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
+/* Base page layout: full height column with background and font */
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -34,22 +40,26 @@ body {
   line-height: 1.6;
 }
 
+/* Keep images responsive */
 img {
   max-width: 100%;
   height: auto;
 }
 
+/* Base link style — no underline, inherits text color */
 a {
   color: inherit;
   text-decoration: none;
   transition: color 200ms ease;
 }
 
+/* Highlight link on hover/focus */
 a:hover,
 a:focus-visible {
   color: var(--accent);
 }
 
+/* Sticky top header with shadow */
 header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -59,6 +69,7 @@ header {
   box-shadow: 0 10px 30px rgba(31, 27, 44, 0.06);
 }
 
+/* Main navigation bar layout */
 .primary-nav {
   display: flex;
   align-items: center;
@@ -67,6 +78,7 @@ header {
   gap: 1rem;
 }
 
+/* Brand logo + name link on the left */
 .primary-nav .brand {
   display: inline-flex;
   align-items: center;
@@ -80,6 +92,7 @@ header {
   line-height: 1.2;
 }
 
+/* Small logo image in the nav */
 .nav-logo {
   width: 42px;
   height: 42px;
@@ -87,10 +100,12 @@ header {
   transition: transform 250ms ease;
 }
 
+/* Hide logo if image fails to load */
 .nav-logo.logo-hidden {
   display: none;
 }
 
+/* Nav links list */
 .primary-nav ul {
   list-style: none;
   display: flex;
@@ -103,6 +118,7 @@ header {
   margin: 0;
 }
 
+/* Individual nav link pill style */
 .primary-nav a {
   padding: 0.45rem 0.9rem;
   border-radius: 999px;
@@ -112,6 +128,7 @@ header {
   transition: background 200ms ease, color 200ms ease;
 }
 
+/* Active/hover state for nav links */
 .primary-nav a.active,
 .primary-nav a:hover,
 .primary-nav a:focus-visible {
@@ -119,6 +136,7 @@ header {
   color: var(--primary);
 }
 
+/* Hamburger toggle button — hidden on desktop */
 .nav-toggle {
   display: none;
   flex-direction: column;
@@ -130,6 +148,7 @@ header {
   cursor: pointer;
 }
 
+/* Hamburger lines */
 .nav-toggle span {
   width: 24px;
   height: 3px;
@@ -137,18 +156,21 @@ header {
   border-radius: 999px;
 }
 
+/* Centered content wrapper with max-width */
 .container {
   width: min(1200px, 94%);
   margin: 2rem auto;
   flex: 1;
 }
 
+/* Main content column with vertical spacing */
 main {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
+/* Hero banner on the home page */
 .hero {
   background: var(--surface);
   border-radius: 1.5rem;
@@ -157,6 +179,7 @@ main {
   text-align: center;
 }
 
+/* Centers hero content vertically */
 .hero-centered {
   display: flex;
   flex-direction: column;
@@ -164,6 +187,7 @@ main {
   gap: 1rem;
 }
 
+/* Large logo shown in the hero section */
 .brand-logo {
   width: 170px;
   height: auto;
@@ -174,6 +198,7 @@ main {
   transform: scale(1.03);
 }
 
+/* Row of call-to-action buttons */
 .cta-group {
   display: flex;
   gap: 1rem;
@@ -181,6 +206,7 @@ main {
   margin-top: 1.5rem;
 }
 
+/* Base button style — pill shape, bold text */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -193,27 +219,32 @@ main {
   transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease;
 }
 
+/* Keyboard focus ring for accessibility */
 .btn:focus-visible {
   outline: 3px solid rgba(0, 140, 158, 0.35);
   outline-offset: 3px;
 }
 
+/* Slight lift on hover */
 .btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
 }
 
+/* Primary (default) button — dark red */
 .btn-primary,
 .btn {
   background: var(--primary);
   color: #fff;
 }
 
+/* Secondary button — light teal */
 .btn-secondary {
   background: var(--accent-light);
   color: var(--accent);
 }
 
+/* White rounded card used for forms, sections, and grid items */
 .card,
 .hero,
 .filters,
@@ -227,16 +258,19 @@ main {
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
+/* Card that spans all grid columns */
 .card.full-span {
   grid-column: 1 / -1;
 }
 
+/* Top section of a page with title and description */
 .page-header {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
+/* Small label pill above a page title (e.g. "Admin") */
 .page-tag {
   align-self: flex-start;
   background: rgba(0, 140, 158, 0.1);
@@ -248,6 +282,7 @@ main {
   letter-spacing: 0.02em;
 }
 
+/* Row of metadata (e.g. term, credits) in muted text */
 .meta {
   display: flex;
   gap: 1rem;
@@ -256,11 +291,13 @@ main {
   font-size: 0.95rem;
 }
 
+/* Centers login/register pages */
 .auth-page {
   align-items: center;
   text-align: center;
 }
 
+/* Narrow card for login and register forms */
 .auth-page .card {
   width: min(460px, 100%);
   margin-inline: auto;
@@ -270,6 +307,7 @@ main {
   gap: 1rem;
 }
 
+/* Form field label stacks above its input */
 label {
   display: flex;
   flex-direction: column;
@@ -278,6 +316,7 @@ label {
   color: var(--muted);
 }
 
+/* Shared style for all form inputs */
 input,
 select,
 textarea {
@@ -289,6 +328,7 @@ textarea {
   transition: border 200ms ease, box-shadow 200ms ease;
 }
 
+/* Highlight input when focused */
 input:focus,
 select:focus,
 textarea:focus {
@@ -297,10 +337,12 @@ textarea:focus {
   outline: none;
 }
 
+/* Allow vertical resize only for textareas */
 textarea {
   resize: vertical;
 }
 
+/* Inline checkbox label layout */
 .checkbox {
   flex-direction: row;
   align-items: center;
@@ -312,31 +354,37 @@ textarea {
   margin-right: 0.5rem;
 }
 
+/* Row of submit/cancel buttons at end of a form */
 .form-actions {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
 }
 
+/* Form stacks fields vertically */
 form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
+/* Small hint or feedback text below a field */
 .helper-text {
   font-size: 0.9rem;
   color: var(--muted);
 }
 
+/* Error state feedback */
 .helper-text[data-state='error'] {
   color: var(--error);
 }
 
+/* Success state feedback */
 .helper-text[data-state='success'] {
   color: var(--success);
 }
 
+/* Muted/secondary text style */
 .muted {
   color: var(--muted);
   font-style: italic;
@@ -347,6 +395,7 @@ form {
   font-style: italic;
 }
 
+/* Responsive grid for dashboard cards */
 .dashboard-grid,
 .card-grid {
   display: grid;
@@ -354,25 +403,30 @@ form {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
+/* Minimum height for card grid items */
 .card-grid > * {
   min-height: 120px;
 }
 
+/* Scrollable wrapper for wide tables on small screens */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
 }
 
+/* Full-width data table with no border gaps */
 .responsive-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.95rem;
 }
 
+/* Tinted header row */
 .responsive-table thead {
   background: rgba(122, 29, 63, 0.08);
 }
 
+/* Cell padding and bottom border */
 .responsive-table th,
 .responsive-table td {
   padding: 0.9rem;
@@ -380,16 +434,19 @@ form {
   border-bottom: 1px solid var(--border);
 }
 
+/* Row highlight on hover */
 .responsive-table tbody tr:hover {
   background: rgba(122, 29, 63, 0.04);
 }
 
+/* Inline action buttons inside a table cell */
 .table-actions {
   display: inline-flex;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
 
+/* Text-style action button (e.g. Edit, View) */
 .table-actions button {
   border: none;
   background: transparent;
@@ -404,10 +461,12 @@ form {
   color: var(--primary);
 }
 
+/* Delete/destructive action button */
 .table-actions button.danger {
   color: var(--error);
 }
 
+/* Empty state box shown when a list has no items */
 .placeholder,
 .table-placeholder,
 .empty-state {
@@ -421,6 +480,7 @@ form {
   background: var(--surface-alt);
 }
 
+/* Status badge pill (pending / completed) */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -431,22 +491,26 @@ form {
   text-transform: capitalize;
 }
 
+/* Orange badge for pending assessments */
 .badge.pending {
   background: rgba(255, 145, 77, 0.18);
   color: #c25400;
 }
 
+/* Green badge for completed assessments */
 .badge.completed {
   background: rgba(31, 138, 107, 0.18);
   color: var(--success);
 }
 
+/* Progress bar container with label and track */
 .progress {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
 
+/* Label row above the bar showing name and percentage */
 .progress-label {
   display: flex;
   justify-content: space-between;
@@ -454,6 +518,7 @@ form {
   color: var(--muted);
 }
 
+/* Background track of the progress bar */
 .progress-track {
   width: 100%;
   height: 0.75rem;
@@ -462,6 +527,7 @@ form {
   overflow: hidden;
 }
 
+/* Colored fill inside the progress track */
 .progress-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--accent), var(--primary));
@@ -469,18 +535,21 @@ form {
   transition: width 300ms ease;
 }
 
+/* Vertical list of progress bars used in analytics */
 .chart-list {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
+/* Large number displayed in a stat card */
 .stat-value {
   font-size: 2.5rem;
   font-weight: 700;
   margin: 0.5rem 0;
 }
 
+/* Info/notification box */
 .alert {
   border-radius: 0.9rem;
   padding: 0.85rem 1rem;
@@ -490,10 +559,12 @@ form {
   font-size: 0.9rem;
 }
 
+/* Blue-tinted info variant */
 .alert.info {
   border-color: rgba(0, 140, 158, 0.35);
 }
 
+/* Row of controls for template selection actions */
 .template-actions {
   margin-top: 0.5rem;
   display: flex;
@@ -502,10 +573,12 @@ form {
   align-items: center;
 }
 
+/* Wide dropdown in template actions */
 .template-actions select {
   min-width: 240px;
 }
 
+/* List of assessment component rows in a form */
 .components-list {
   display: flex;
   flex-direction: column;
@@ -513,6 +586,7 @@ form {
   margin: 1rem 0;
 }
 
+/* Single assessment component row with inputs and remove button */
 .component-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) auto;
@@ -520,6 +594,7 @@ form {
   align-items: end;
 }
 
+/* Remove button inside a component row */
 .component-row button {
   border: none;
   background: rgba(122, 29, 63, 0.08);
@@ -533,11 +608,13 @@ form {
   background: rgba(122, 29, 63, 0.18);
 }
 
+/* Shown when a list has no items yet */
 .empty-message {
   color: var(--muted);
   font-style: italic;
 }
 
+/* Page footer pinned to the bottom */
 footer {
   text-align: center;
   padding: 1.5rem;
@@ -545,16 +622,20 @@ footer {
   color: var(--muted);
 }
 
+/* Mobile layout adjustments for screens under 900px */
 @media (max-width: 900px) {
+  /* Show hamburger toggle on mobile */
   .nav-toggle {
     display: flex;
   }
 
+  /* Allow nav to wrap on small screens */
   .primary-nav {
     flex-wrap: wrap;
     padding: 1rem;
   }
 
+  /* Hide nav links by default; show when .open is added */
   .primary-nav ul {
     flex-direction: column;
     width: 100%;
@@ -567,10 +648,12 @@ footer {
     display: flex;
   }
 
+  /* Full-width links in mobile nav */
   .primary-nav a {
     width: 100%;
   }
 
+  /* Prevent table cells from wrapping awkwardly */
   .responsive-table,
   .responsive-table th,
   .responsive-table td {

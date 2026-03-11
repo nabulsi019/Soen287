@@ -1,4 +1,10 @@
-<!-- Yousef Yousef 40299095-->
+<!-- 
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+-->
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,92 +13,311 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Courses | Smart Course Companion</title>
   <link rel="stylesheet" href="assets/styles.css" />
-  <script src="assets/app.js" defer></script>
 </head>
 <body>
   <header>
     <nav class="primary-nav" data-nav>
-                  <a class="brand" href="index.html">
+      <a class="brand" href="index.html">
         <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
         <span>Smart Course Companion</span>
       </a>
       <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </button>
       <ul>
-        <li><a href="index.html" data-role="public">Landing</a></li>
+        <li><a href="index.html" data-role="public">Home Page</a></li>
         <li><a href="login.html" data-role="public">Login</a></li>
         <li><a href="register.html" data-role="public">Register</a></li>
         <li><a href="student-dashboard.html" data-role="student">Student Dashboard</a></li>
-        <li><a href="courses.html" data-role="student">Courses</a></li>
         <li><a href="admin-dashboard.html" data-role="admin">Admin Dashboard</a></li>
       </ul>
     </nav>
   </header>
   <main class="container">
     <section class="page-header">
-      <h1>My Courses</h1>
-      <p>Add, edit, or remove courses. Only your own records are visible.</p>
+      <h1>Courses</h1>
+      <p>Search for available courses and manage your enrolled courses.</p>
     </section>
-    <section class="layout course-management">
-      <form class="card" data-form="course-manage">
-        <h2>Add / Edit Course</h2>
-        <input type="hidden" name="courseId" />
-        <label>Course Code
-          <input type="text" name="code" placeholder="e.g., SOEN 287" required />
-        </label>
-        <label>Course Name
-          <input type="text" name="name" placeholder="Course name" required />
-        </label>
-        <label>Instructor
-          <input type="text" name="instructor" placeholder="Instructor" required />
-        </label>
-        <label>Term
-          <input type="text" name="term" placeholder="e.g., Winter 2026" required />
-        </label>
-        <label class="checkbox">
-          <input type="checkbox" name="enabled" checked />
-          <span>Enabled</span>
+
+    <!-- ── Search ───────────────────────────────────────────── -->
+    <section class="card">
+      <h2>Search Available Courses</h2>
+      <label>Term
+        <select id="termSelect">
+          <option value="">-- Select a term --</option>
+          <option value="winter-2026">Winter 2026</option>
+          <option value="summer-2026">Summer 2026</option>
+          <option value="fall-2026">Fall 2026</option>
+          <option value="winter-2027">Winter 2027</option>
+        </select>
+      </label>
+      <label>Search by code or title
+        <input type="text" id="searchInput" placeholder="e.g., COMP or Engineering" disabled />
+      </label>
+      <div class="form-actions">
+        <button type="button" class="btn" id="searchBtn" disabled>Search</button>
+      </div>
+    </section>
+
+    <section class="card" id="resultsSection" style="display:none;">
+      <h2>Results</h2>
+      <div class="table-wrapper">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Title</th>
+              <th>Term</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="courseResults"></tbody>
+        </table>
+      </div>
+      <p id="noResultsMsg" class="helper-text" style="display:none;">No enabled courses found for this term.</p>
+    </section>
+
+    <!-- ── Enroll Modal ──────────────────────────────────────── -->
+    <div id="enrollModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;align-items:center;justify-content:center;">
+      <div class="card" style="max-width:400px;width:90%;margin:0 auto;">
+        <h2 id="enrollModalTitle">Enroll in Course</h2>
+        <label>Instructor Name
+          <input type="text" id="instructorInput" placeholder="e.g., Dr. Smith" />
         </label>
         <div class="form-actions">
-          <button type="submit" class="btn">Save Course</button>
-          <button type="button" class="btn btn-secondary" data-action="reset-course-form">Clear</button>
+          <button class="btn" id="confirmEnrollBtn">Confirm Enroll</button>
+          <button class="btn btn-secondary" id="cancelEnrollBtn">Cancel</button>
         </div>
-        <p class="helper-text" id="courseFormFeedback"></p>
-        <p class="alert info" id="catalogRuleMessage">You may add any enabled catalog course or create a custom course by using a new code.</p>
-        <div class="template-actions">
-          <label>Create from Template
-            <select data-select="course-template">
-              <option value="">Select template</option>
-            </select>
-          </label>
-          <button type="button" class="btn btn-secondary" data-action="apply-template">Create from Template</button>
-        </div>
-      </form>
-      <section class="card">
-        <h2>Course List</h2>
-        <div class="table-wrapper">
-          <table class="responsive-table">
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Instructor</th>
-                <th>Term</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="studentCourseTable"></tbody>
-          </table>
-        </div>
-      </section>
+      </div>
+    </div>
+
+    <!-- ── My Enrolled Courses ───────────────────────────────── -->
+    <section class="card">
+      <h2>My Enrolled Courses</h2>
+      <div class="table-wrapper">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Title</th>
+              <th>Term</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="enrolledTable"></tbody>
+        </table>
+      </div>
+      <p id="noEnrolledMsg" class="helper-text" style="display:none;">You have not enrolled in any courses yet.</p>
     </section>
   </main>
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>
+  <script>
+    // Guard: redirect to login if no session exists
+    var _currentUser = JSON.parse(localStorage.getItem('scc_currentUser') || 'null');
+    if (!_currentUser) { window.location.href = 'login.html'; }
+
+    // Maps term keys to display labels
+    var termLabels = {
+      'winter-2026': 'Winter 2026',
+      'summer-2026': 'Summer 2026',
+      'fall-2026':   'Fall 2026',
+      'winter-2027': 'Winter 2027'
+    };
+
+    function getCurrentUserId() {
+      return _currentUser ? _currentUser.id : null;
+    }
+
+    // Returns courses the current user is enrolled in
+    function getEnrolled() {
+      var uid = getCurrentUserId();
+      return JSON.parse(localStorage.getItem('scc_myCourses') || '[]')
+        .filter(function (c) { return c.userId === uid; });
+    }
+
+    // Checks if user is already enrolled in a given admin course
+    function isEnrolled(adminCourseId) {
+      return getEnrolled().some(function (c) { return c.adminCourseId === adminCourseId; });
+    }
+
+    // ── Enroll in a course ────────────────────────────────────────
+    function enroll(adminCourse, instructor) {
+      if (isEnrolled(adminCourse.id)) return;
+      var uid = getCurrentUserId();
+      var courseId = Date.now(); // unique id for this enrollment
+
+      // Save enrollment record under the current user
+      var allCourses = JSON.parse(localStorage.getItem('scc_myCourses') || '[]');
+      allCourses.push({
+        id:            courseId,
+        userId:        uid,
+        adminCourseId: adminCourse.id,
+        code:          adminCourse.code,
+        name:          adminCourse.title,
+        instructor:    instructor || '',
+        term:          termLabels[adminCourse.term] || adminCourse.term
+      });
+      localStorage.setItem('scc_myCourses', JSON.stringify(allCourses));
+
+      // Copy any admin-defined assessments into the student's assessment list
+      var adminAssessments = JSON.parse(localStorage.getItem('adminCourseAssessments') || '[]')
+        .filter(function (a) { return a.courseId === adminCourse.id; });
+      var studentAssessments = JSON.parse(localStorage.getItem('scc_assessments') || '[]');
+      adminAssessments.forEach(function (a) {
+        studentAssessments.push({
+          id:                Date.now() + Math.floor(Math.random() * 10000),
+          courseId:          courseId,
+          adminAssessmentId: a.id,
+          title:             a.title,
+          category:          a.category,
+          dueDate:           a.dueDate,
+          weight:            a.weight || 0,
+          earned:            null,
+          total:             a.total || 100,
+          status:            'pending'
+        });
+      });
+      localStorage.setItem('scc_assessments', JSON.stringify(studentAssessments));
+
+      renderEnrolled();
+      renderResults(); // refresh enroll buttons to show "Enrolled"
+    }
+
+    // ── Remove enrollment ─────────────────────────────────────────
+    function removeEnrollment(courseId) {
+      var uid = getCurrentUserId();
+      // Remove only this user's enrollment record
+      var all = JSON.parse(localStorage.getItem('scc_myCourses') || '[]')
+        .filter(function (c) { return !(c.userId === uid && c.id === courseId); });
+      localStorage.setItem('scc_myCourses', JSON.stringify(all));
+
+      // Also remove all assessments tied to this enrollment
+      var assessments = JSON.parse(localStorage.getItem('scc_assessments') || '[]')
+        .filter(function (a) { return a.courseId !== courseId; });
+      localStorage.setItem('scc_assessments', JSON.stringify(assessments));
+
+      renderEnrolled();
+      renderResults();
+    }
+
+    // ── Render enrolled table ─────────────────────────────────────
+    function renderEnrolled() {
+      var enrolled = getEnrolled();
+      var tbody    = document.getElementById('enrolledTable');
+      var noMsg    = document.getElementById('noEnrolledMsg');
+      tbody.innerHTML = '';
+
+      if (enrolled.length === 0) { noMsg.style.display = 'block'; return; }
+      noMsg.style.display = 'none';
+
+      enrolled.forEach(function (c) {
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td>' + c.code + '</td>' +
+          '<td>' + c.name + '</td>' +
+          '<td>' + c.term + '</td>' +
+          '<td class="action-cell">' +
+            '<a href="course-details.html?id=' + c.id + '" class="btn btn-secondary">View Details</a> ' +
+            '<button class="btn btn-danger" data-action="remove" data-id="' + c.id + '">Remove</button>' +
+          '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('enrolledTable').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-action="remove"]');
+      if (btn) removeEnrollment(Number(btn.dataset.id));
+    });
+
+    // ── Search ────────────────────────────────────────────────────
+    var lastResults = []; // stores last search results for re-rendering
+
+    var termSelect    = document.getElementById('termSelect');
+    var searchInput   = document.getElementById('searchInput');
+    var searchBtn     = document.getElementById('searchBtn');
+    var resultsSection = document.getElementById('resultsSection');
+
+    // Enable search inputs only after a term is selected
+    termSelect.addEventListener('change', function () {
+      var hasTerm = this.value !== '';
+      searchInput.disabled = !hasTerm;
+      searchBtn.disabled   = !hasTerm;
+      resultsSection.style.display = 'none';
+    });
+
+    searchBtn.addEventListener('click', function () {
+      var term  = termSelect.value;
+      var query = searchInput.value.trim().toLowerCase();
+      var all   = JSON.parse(localStorage.getItem('adminCourses') || '[]');
+
+      // Filter to enabled courses matching the selected term and search query
+      lastResults = all.filter(function (c) {
+        if (!c.enabled) return false;
+        if (c.term !== term) return false;
+        if (query && !c.code.toLowerCase().includes(query) && !c.title.toLowerCase().includes(query)) return false;
+        return true;
+      });
+
+      resultsSection.style.display = 'block';
+      renderResults();
+    });
+
+    function renderResults() {
+      var tbody  = document.getElementById('courseResults');
+      var noMsg  = document.getElementById('noResultsMsg');
+      tbody.innerHTML = '';
+
+      if (lastResults.length === 0) { noMsg.style.display = 'block'; return; }
+      noMsg.style.display = 'none';
+
+      lastResults.forEach(function (c) {
+        var enrolled  = isEnrolled(c.id);
+        var tr = document.createElement('tr');
+        // Show "Enrolled" label if already enrolled, otherwise show Enroll button
+        tr.innerHTML =
+          '<td>' + c.code + '</td>' +
+          '<td>' + c.title + '</td>' +
+          '<td>' + (termLabels[c.term] || c.term) + '</td>' +
+          '<td>' + (enrolled
+            ? '<span class="helper-text">Enrolled</span>'
+            : '<button class="btn" data-action="enroll" data-id="' + c.id + '">Enroll</button>'
+          ) + '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    var _pendingEnrollCourse = null; // holds course while modal is open
+    var enrollModal = document.getElementById('enrollModal');
+
+    // Clicking Enroll opens the modal to collect instructor name
+    document.getElementById('courseResults').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-action="enroll"]');
+      if (!btn) return;
+      var id = Number(btn.dataset.id);
+      _pendingEnrollCourse = lastResults.find(function (c) { return c.id === id; });
+      if (!_pendingEnrollCourse) return;
+      document.getElementById('enrollModalTitle').textContent = 'Enroll in ' + _pendingEnrollCourse.code;
+      document.getElementById('instructorInput').value = '';
+      enrollModal.style.display = 'flex';
+    });
+
+    // Confirm button submits the enrollment with the entered instructor name
+    document.getElementById('confirmEnrollBtn').addEventListener('click', function () {
+      if (!_pendingEnrollCourse) return;
+      var instructor = document.getElementById('instructorInput').value.trim();
+      enroll(_pendingEnrollCourse, instructor);
+      enrollModal.style.display = 'none';
+      _pendingEnrollCourse = null;
+    });
+
+    document.getElementById('cancelEnrollBtn').addEventListener('click', function () {
+      enrollModal.style.display = 'none';
+      _pendingEnrollCourse = null;
+    });
+
+    renderEnrolled();
+  </script>
 </body>
 </html>

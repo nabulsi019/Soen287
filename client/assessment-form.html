@@ -1,18 +1,22 @@
-<!-- Qais alasmar 40260168-->
+<!-- 
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+-->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assessment Submission | Smart Course Companion</title>
+  <title>Add Assessment | Smart Course Companion</title>
   <link rel="stylesheet" href="assets/styles.css" />
-  <script src="assets/app.js" defer></script>
 </head>
 <body>
   <header>
     <nav class="primary-nav" data-nav>
-                  <a class="brand" href="index.html">
+      <a class="brand" href="index.html">
         <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
         <span>Smart Course Companion</span>
       </a>
@@ -22,50 +26,98 @@
         <span></span>
       </button>
       <ul>
-        <li><a href="index.html" data-role="public">Landing</a></li>
+        <li><a href="index.html" data-role="public">Home Page</a></li>
         <li><a href="login.html" data-role="public">Login</a></li>
         <li><a href="register.html" data-role="public">Register</a></li>
         <li><a href="student-dashboard.html" data-role="student">Student Dashboard</a></li>
-        <li><a href="courses.html" data-role="student">Courses</a></li>
         <li><a href="admin-dashboard.html" data-role="admin">Admin Dashboard</a></li>
       </ul>
     </nav>
   </header>
   <main class="container">
     <section class="page-header">
-      <h1>Assessment Submission</h1>
-      <p>Submit coursework details, weight, and due dates.</p>
+      <h1>Add Assessment</h1>
+      <p id="courseLabel">Adding assessment for your course.</p>
     </section>
-    <form class="card" data-form="assessment">
-      <label>Course
-        <select name="course" required></select>
-      </label>
+    <form class="card" id="assessmentForm">
+      <input type="hidden" id="courseId" />
       <label>Assessment Title
-        <input type="text" name="title" required />
+        <input type="text" id="title" placeholder="e.g., Midterm Exam" required />
       </label>
-      <label>Assessment Type
-        <select name="type" required>
-          <option value="assignment">Assignment</option>
-          <option value="quiz">Quiz</option>
-          <option value="project">Project</option>
-          <option value="exam">Exam</option>
+      <label>Category
+        <select id="category" required>
+          <option value="Assignment">Assignment</option>
+          <option value="Lab">Lab</option>
+          <option value="Quiz">Quiz</option>
+          <option value="Midterm">Midterm</option>
+          <option value="Final Exam">Final Exam</option>
+          <option value="Project">Project</option>
         </select>
       </label>
-      <label>Weight (%)
-        <input type="number" name="weight" min="0" max="100" step="1" required />
-      </label>
       <label>Due Date
-        <input type="date" name="dueDate" required />
+        <input type="date" id="dueDate" required />
       </label>
-      <label>Notes
-        <textarea name="notes" rows="4" placeholder="Provide extra context"></textarea>
+      <label>Weight (%)
+        <input type="number" id="weight" min="0" max="100" step="1" placeholder="e.g., 20" required />
       </label>
-      <button type="submit" class="btn">Submit Assessment</button>
+      <div class="form-actions">
+        <button type="submit" class="btn">Save Assessment</button>
+        <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+      </div>
       <p class="helper-text" id="assessmentFeedback"></p>
     </form>
   </main>
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>
+  <script>
+    // Read courseId from URL query string (e.g. ?courseId=123)
+    var params   = new URLSearchParams(window.location.search);
+    var courseId = params.get('courseId');
+
+    // Pre-fill hidden field and show course name in subtitle
+    if (courseId) {
+      document.getElementById('courseId').value = courseId;
+      var courses = JSON.parse(localStorage.getItem('scc_myCourses') || '[]');
+      var course  = courses.find(function (c) { return c.id === Number(courseId); });
+      if (course) {
+        document.getElementById('courseLabel').textContent = 'Adding assessment for: ' + course.code + ' — ' + course.name;
+      }
+    }
+
+    // Cancel returns to the course that launched this form
+    document.getElementById('cancelBtn').addEventListener('click', function () {
+      window.location.href = courseId ? 'course-details.html?id=' + courseId : 'courses.html';
+    });
+
+    document.getElementById('assessmentForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var cid      = document.getElementById('courseId').value;
+      var feedback = document.getElementById('assessmentFeedback');
+
+      // Build assessment object; status defaults to pending
+      var assessment = {
+        id:       Date.now(),           // unique id using timestamp
+        courseId: Number(cid),
+        title:    document.getElementById('title').value.trim(),
+        category: document.getElementById('category').value,
+        dueDate:  document.getElementById('dueDate').value,
+        weight:   Number(document.getElementById('weight').value) || 0,
+        status:   'pending'
+      };
+
+      // Append to existing assessments array in localStorage
+      var all = JSON.parse(localStorage.getItem('scc_assessments') || '[]');
+      all.push(assessment);
+      localStorage.setItem('scc_assessments', JSON.stringify(all));
+
+      feedback.textContent = 'Assessment saved! Redirecting...';
+      feedback.style.color = 'green';
+      // Short delay so user sees the confirmation before redirect
+      setTimeout(function () {
+        window.location.href = cid ? 'course-details.html?id=' + cid : 'courses.html';
+      }, 1200);
+    });
+  </script>
 </body>
 </html>

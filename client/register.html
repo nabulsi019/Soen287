@@ -1,4 +1,9 @@
-<!-- Mark Nazlian 40300696-->
+<!-- 
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,7 +12,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Register | Smart Course Companion</title>
   <link rel="stylesheet" href="assets/styles.css" />
-  <script src="assets/app.js" defer></script>
 </head>
 <body>
   <header>
@@ -22,11 +26,10 @@
         <span></span>
       </button>
       <ul>
-        <li><a href="index.html" data-role="public">Landing</a></li>
+        <li><a href="index.html" data-role="public">Home Page</a></li>
         <li><a href="login.html" data-role="public">Login</a></li>
         <li><a href="register.html" data-role="public">Register</a></li>
         <li><a href="student-dashboard.html" data-role="student">Student Dashboard</a></li>
-        <li><a href="courses.html" data-role="student">Courses</a></li>
         <li><a href="admin-dashboard.html" data-role="admin">Admin Dashboard</a></li>
       </ul>
     </nav>
@@ -56,5 +59,40 @@
   <footer>
     <small>&copy; 2026 Smart Course Companion</small>
   </footer>
+  <script>
+    document.querySelector('[data-form="register"]').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const firstName = form.querySelector('[name="firstName"]').value.trim();
+      const lastName  = form.querySelector('[name="lastName"]').value.trim();
+      const email     = form.querySelector('[name="email"]').value.trim().toLowerCase();
+      const password  = form.querySelector('[name="password"]').value;
+      const confirm   = form.querySelector('[name="confirmPassword"]').value;
+      const feedback  = document.getElementById('registerFeedback');
+
+      // Client-side password match validation
+      if (password !== confirm) {
+        feedback.textContent = 'Passwords do not match.';
+        feedback.style.color = 'red';
+        return;
+      }
+
+      // Load existing users and check for duplicate email
+      const users = JSON.parse(localStorage.getItem('scc_users') || '[]');
+      if (users.find(function (u) { return u.email === email; })) {
+        feedback.textContent = 'An account with this email already exists.';
+        feedback.style.color = 'red';
+        return;
+      }
+
+      // New accounts are always students; id uses timestamp for uniqueness
+      users.push({ id: Date.now(), firstName: firstName, lastName: lastName, email: email, password: password, role: 'student' });
+      localStorage.setItem('scc_users', JSON.stringify(users));
+
+      feedback.textContent = 'Account created! Redirecting to login...';
+      feedback.style.color = 'green';
+      setTimeout(function () { window.location.href = 'login.html'; }, 1500);
+    });
+  </script>
 </body>
 </html>

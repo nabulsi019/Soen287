@@ -1,40 +1,66 @@
-# Installation Guide (Deliverable 1 Frontend)
+# Installation Guide — Deliverable 1 (Frontend)
 
-## 1. Prerequisites
-- Desktop browser (Chrome, Edge, Firefox, or Safari).
-- Recommended: Visual Studio Code with the [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) extension for auto-reload.
+> This deliverable implements the frontend only using HTML, CSS, and JavaScript with mock data stored in `localStorage`. No backend, no server, and no database are required to run this version.
 
-## 2. Get the Source
-1. Download or clone the repository to your machine.
-2. Ensure the project lives inside a path **without spaces** if possible to avoid shell quoting issues.
+---
 
-## 3. Run the Frontend
-### Option A – VS Code + Live Server
-1. Open the repo folder (`soen287/`) in VS Code.
-2. Right-click `client/index.html` in the Explorer and choose **Open with Live Server**.
-3. Your default browser opens `http://127.0.0.1:5500/.../client/index.html`. Keep Live Server running while you work.
+## Open the App (No Installation Required)
 
-### Option B – Static File (no tooling)
-1. Open your browser.
-2. Drag-and-drop `client/index.html` into the browser window or use **File → Open**.
-3. Ensure relative links load via the `file://` protocol (navigation works because all pages are plain HTML).
+Click the link below to open the app directly in your browser:
 
-## 4. Logging In / Seeding Data
-- Use the **Seed Demo Data** button on the landing page to reset the mock users, courses, assessments, and templates (admin: `admin@smartcoursecompanion.ca / Admin#1234`, student: `student@smartcoursecompanion.ca / Student#1234`).
-- The button clears any changes you made in `localStorage` and reloads the page with fresh demo data.
+**[Open App — client/index.html](../client/index.html)**
 
-## 5. Resetting Local Storage Manually
-1. Open the browser dev tools (F12) → **Application** (Chrome) or **Storage** (Firefox).
-2. Expand **Local Storage**, select the site origin (or `file://` entry if running locally).
-3. Delete keys beginning with:
-   - `sccUsers`
-   - `sccCurrentUser`
-   - `sccCourses`
-   - `sccAssessments`
-   - `sccTemplates`
-4. Refresh the page; the app reseeds defaults if you click **Seed Demo Data** or log in again.
+If the link does not open automatically, navigate to the `client/` folder and double-click `index.html` — it opens in your default browser via `file://` with no setup needed.
 
-## 6. Troubleshooting
-- **Blank data after refresh:** Seed demo data again or ensure you didn’t block third-party cookies/storage.
-- **Links don’t work in file mode:** Some browsers block `file://` relative navigation; use VS Code Live Server instead.
-- **Validation errors:** Inline helper text under each form highlights what needs fixing (e.g., passwords < 8 chars, template weights not totaling 100%).
+---
+
+## Creating Test Accounts
+
+### Student Account
+1. Click **Register** in the navbar.
+2. Fill in your name, email, and a password (minimum 8 characters).
+3. On success you are redirected to the Login page. Log in to reach the Student Dashboard.
+
+### Admin Account
+Registration always creates a student. To create an admin account, open the browser console (F12 → Console) on any page and paste:
+
+```javascript
+var users = JSON.parse(localStorage.getItem('scc_users') || '[]');
+users.push({
+  id: Date.now(),
+  firstName: 'Admin',
+  lastName: 'User',
+  email: 'admin@scc.ca',
+  password: 'Admin1234',
+  role: 'admin'
+});
+localStorage.setItem('scc_users', JSON.stringify(users));
+```
+
+Then log in with `admin@scc.ca` / `Admin1234` to reach the Admin Dashboard.
+
+---
+
+## Resetting Data
+
+All data lives in `localStorage`. To wipe everything and start fresh:
+
+1. Open browser dev tools (F12) → **Application** tab (Chrome) or **Storage** tab (Firefox).
+2. Select **Local Storage** → click **Clear All**, or delete these keys individually:
+   - `scc_users`
+   - `scc_currentUser`
+   - `scc_myCourses`
+   - `scc_assessments`
+   - `adminCourses`
+3. Refresh the page.
+
+---
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| Clicking the link shows a download prompt | Right-click → Open With → your browser |
+| Navigation between pages does not work | Some browsers block `file://` navigation; try a different browser or use VS Code Live Server |
+| Admin dashboard not accessible | Create the admin account using the console snippet above |
+| Data missing after refresh | Make sure your browser allows `localStorage` for `file://` pages |

@@ -1,9 +1,29 @@
-# Features Upcoming
+# Features Upcoming — Deliverable 2 (Backend)
 
-- **Node.js backend + API:** Build Express (or similar) server to handle authentication, courses, assessments, templates, and analytics with proper routing, validation, and error handling.
-- **Persistent datastore:** Replace localStorage with a real database (e.g., MongoDB/Postgres) so all user/course/assessment data persists and scales beyond the frontend mock state.
-- **Server-side calculations:** Move averages, completion rates, and other metrics into backend services to ensure accuracy, prevent tampering, and enable sharing across clients.
-- **Real authentication + authorization:** Implement secure user registration/login with hashed passwords, sessions/JWTs, and role-based middleware so student/admin access is enforced server-side.
-- **No hard-coded data:** Seed initial demo content via backend scripts and expose endpoints for CRUD; frontend will consume dynamic data exclusively over API calls.
-- **Form/file validation + error reporting:** Centralized middleware will validate inputs (weights, ownership, enabled status) and return structured responses the frontend can surface.
-- **Deployment readiness:** Add environment configuration, scripts, and deployment guidelines (e.g., Render/Heroku) for the full stack, plus update docs/install guides accordingly.
+The following features are planned for the next deliverable. All current frontend functionality will be preserved and connected to a real backend.
+
+---
+
+## Backend & API
+- Build a **Node.js + Express** server exposing REST API endpoints for users, courses, assessments, and analytics.
+- Replace all `localStorage` reads/writes with `fetch()` API calls to the backend.
+
+## Database
+- Introduce a real database firebase to persist all user, course, and assessment data server-side.
+- Data will no longer be lost on browser clear or device switch.
+
+## Real Authentication & Authorization
+- Implement secure login with **hashed passwords** (bcrypt) and session management or **JWT tokens**.
+- Enforce role-based access server-side so admin routes reject unauthorized requests regardless of client-side state.
+- Remove reliance on `localStorage` for session tracking.
+
+## Server-Side Business Logic
+- Move enrollment rules, assessment weight validation, and analytics calculations from the browser into backend services.
+- Prevents client-side tampering and ensures consistent results across all users.
+
+## Admin Account Management
+- Allow admins to be created through a backend seeding script or a protected setup route, removing the need for manual `localStorage` injection.
+
+## Deployment
+- Add environment configuration (`.env`) and deployment instructions for hosting the full stack on a platform such as Render or Railway.
+- Update the installation guide with production URLs and backend setup steps.
