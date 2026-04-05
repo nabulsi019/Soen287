@@ -1,0 +1,441 @@
+<!--
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830
+ Yousef Yousef 40299095
+Mark Nazlian 403006696
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Courses | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul></ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <nav id="breadcrumb" class="breadcrumb-nav"></nav>
+    <section class="page-header">
+      <span class="page-tag">Admin</span>
+      <h1>Manage Courses</h1>
+      <p>Enable, disable, edit, or delete existing course offerings.</p>
+    </section>
+    <section class="card" id="adminCourseList">
+      <div class="card-header-row">
+        <h2>Course List</h2>
+        <a href="admin-courses.html" class="btn">+ Create Course</a>
+      </div>
+      <div class="table-wrapper">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Title</th>
+              <th>Credits</th>
+              <th>Term</th>
+              <th>Enabled</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminCourseTable"></tbody>
+        </table>
+        <p id="noCoursesMsg" class="helper-text" style="display:none;">No courses found. Create one first.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ── Edit Course Modal ──────────────────────────────────────── -->
+  <div id="editModal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle"
+       style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;
+              align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem;">
+    <div class="card" style="width:min(680px,100%);margin:0 auto;">
+      <h2 id="editModalTitle">Edit Course</h2>
+
+      <!-- Validation error banner -->
+      <p id="editModalError" class="helper-text" data-state="error" style="display:none;"></p>
+
+      <!-- ── Course details ─────────────────────────── -->
+      <fieldset style="border:none;padding:0;margin:0 0 1rem;">
+        <legend style="font-weight:700;margin-bottom:.75rem;font-size:1rem;">Course Details</legend>
+        <input type="hidden" id="editCourseId" />
+
+        <label>Course Code <span style="color:var(--error)">*</span>
+          <input type="text" id="editCode" placeholder="e.g., COMP 890" />
+        </label>
+        <label style="margin-top:.75rem;">Title <span style="color:var(--error)">*</span>
+          <input type="text" id="editTitle" placeholder="e.g., Advanced Software Engineering" />
+        </label>
+        <label style="margin-top:.75rem;">Credits <span style="color:var(--error)">*</span>
+          <input type="number" id="editCredits" min="0" step="1" placeholder="e.g., 3" />
+        </label>
+        <label style="margin-top:.75rem;">Term <span style="color:var(--error)">*</span>
+          <select id="editTerm">
+            <option value="winter-2026">Winter 2026</option>
+            <option value="summer-2026">Summer 2026</option>
+            <option value="fall-2026">Fall 2026</option>
+            <option value="winter-2027">Winter 2027</option>
+          </select>
+        </label>
+        <label style="margin-top:.75rem;">Description <span style="color:var(--error)">*</span>
+          <textarea id="editDescription" rows="3" placeholder="Brief course description"></textarea>
+        </label>
+        <label class="checkbox" style="margin-top:.75rem;">
+          <input type="checkbox" id="editEnabled" />
+          <span>Enabled (visible to students)</span>
+        </label>
+      </fieldset>
+
+      <!-- ── Assessment components ──────────────────── -->
+      <fieldset style="border:1px solid var(--border);border-radius:.9rem;padding:1rem;margin-bottom:1rem;">
+        <legend style="font-weight:700;padding:0 .5rem;font-size:1rem;">Assessment Components</legend>
+        <p class="helper-text" style="margin-bottom:.75rem;">
+          Define the graded components students will see when they enroll.
+          Weights do not need to sum to 100.
+        </p>
+
+        <!-- Column headers -->
+        <div style="display:grid;grid-template-columns:1fr 1.4fr 80px 80px 36px;gap:.5rem;
+                    font-weight:600;font-size:.8rem;color:var(--muted);margin-bottom:.4rem;padding:0 .25rem;">
+          <span>Category</span>
+          <span>Title / Label</span>
+          <span>Weight&nbsp;%</span>
+          <span>Out&nbsp;of</span>
+          <span></span>
+        </div>
+
+        <div id="componentRows"></div>
+
+        <button type="button" class="btn btn-secondary" id="addComponentBtn"
+                style="margin-top:.75rem;padding:.45rem 1rem;font-size:.85rem;">
+          + Add Component
+        </button>
+      </fieldset>
+
+      <div class="form-actions">
+        <button type="button" class="btn" id="saveEditBtn">Save Changes</button>
+        <button type="button" class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+
+  <script src="assets/session.js"></script>
+  <script>
+    var termLabels = {
+      'winter-2026': 'Winter 2026',
+      'summer-2026': 'Summer 2026',
+      'fall-2026':   'Fall 2026',
+      'winter-2027': 'Winter 2027'
+    };
+    var CATEGORIES = ['Assignment', 'Lab', 'Quiz', 'Midterm', 'Final Exam', 'Project'];
+    var coursesData = [];
+
+    function getCourseById(courseId) {
+      return coursesData.find(function (course) {
+        return course.id === courseId;
+      }) || null;
+    }
+
+    function loadCourses() {
+      return SCCSession.fetchJSON('/api/admin/courses').then(function (courses) {
+        coursesData = courses;
+        return coursesData;
+      });
+    }
+
+    function renderTable() {
+      var tbody = document.getElementById('adminCourseTable');
+      var noMsg = document.getElementById('noCoursesMsg');
+
+      tbody.innerHTML = '';
+
+      if (coursesData.length === 0) {
+        noMsg.style.display = 'block';
+        return;
+      }
+
+      noMsg.style.display = 'none';
+
+      coursesData.forEach(function (course) {
+        var tr = document.createElement('tr');
+
+        tr.innerHTML =
+          '<td>' + course.code + '</td>' +
+          '<td>' + course.title + '</td>' +
+          '<td>' + course.credits + '</td>' +
+          '<td>' + (termLabels[course.term] || course.term) + '</td>' +
+          '<td><label class="checkbox"><input type="checkbox" ' + (course.enabled ? 'checked' : '') +
+            ' data-id="' + course.id + '" data-action="toggle-course-enabled" /><span>Enabled</span></label></td>' +
+          '<td class="action-cell">' +
+            '<button type="button" class="btn btn-secondary" data-id="' + course.id + '" data-action="edit-course" style="padding:4px 12px;font-size:.85rem;">Edit</button> ' +
+            '<button type="button" class="btn btn-danger" data-id="' + course.id + '" data-action="delete-course" style="padding:4px 12px;font-size:.85rem;">Delete</button>' +
+          '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    function addComponentRow(container, data) {
+      var row = document.createElement('div');
+      var catOptions = CATEGORIES.map(function (cat) {
+        var selected = data && data.category === cat ? ' selected' : '';
+        return '<option value="' + cat + '"' + selected + '>' + cat + '</option>';
+      }).join('');
+      var titleVal = data ? data.title : '';
+      var weightVal = data ? (data.weight || '') : '';
+      var totalVal = data ? (data.total || '') : '';
+      var dataId = data && data.id ? ' data-assessment-id="' + data.id + '"' : '';
+
+      row.className = 'edit-component-row';
+      row.style.cssText = 'display:grid;grid-template-columns:1fr 1.4fr 80px 80px 36px;gap:.5rem;margin-bottom:.4rem;align-items:center;';
+      row.innerHTML =
+        '<select class="ec-category"' + dataId + '>' + catOptions + '</select>' +
+        '<input type="text" class="ec-title" placeholder="e.g., Midterm 1" value="' + titleVal + '" />' +
+        '<input type="number" class="ec-weight" placeholder="0" min="0" max="100" value="' + weightVal + '" />' +
+        '<input type="number" class="ec-total" placeholder="100" min="1" value="' + totalVal + '" />' +
+        '<button type="button" class="remove-component-btn" title="Remove" style="background:rgba(180,35,24,.1);color:var(--error);border:none;border-radius:.5rem;cursor:pointer;font-weight:700;font-size:1rem;padding:0 .45rem;height:2rem;">&times;</button>';
+
+      row.querySelector('.remove-component-btn').addEventListener('click', function () {
+        row.remove();
+      });
+
+      container.appendChild(row);
+    }
+
+    function openEditModal(courseId) {
+      var course = getCourseById(courseId);
+      var rowsEl;
+
+      if (!course) {
+        return;
+      }
+
+      document.getElementById('editCourseId').value = course.id;
+      document.getElementById('editCode').value = course.code;
+      document.getElementById('editTitle').value = course.title;
+      document.getElementById('editCredits').value = course.credits;
+      document.getElementById('editTerm').value = course.term;
+      document.getElementById('editDescription').value = course.description || '';
+      document.getElementById('editEnabled').checked = !!course.enabled;
+      document.getElementById('editModalError').style.display = 'none';
+
+      rowsEl = document.getElementById('componentRows');
+      rowsEl.innerHTML = '';
+
+      if (!course.assessmentTemplates || course.assessmentTemplates.length === 0) {
+        addComponentRow(rowsEl, null);
+      } else {
+        course.assessmentTemplates.forEach(function (template) {
+          addComponentRow(rowsEl, template);
+        });
+      }
+
+      document.getElementById('editModal').style.display = 'flex';
+      document.getElementById('editCode').focus();
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    function showError(msg) {
+      var el = document.getElementById('editModalError');
+      el.textContent = msg;
+      el.style.display = 'block';
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function reloadTable() {
+      return loadCourses().then(function () {
+        renderTable();
+      });
+    }
+
+    function saveCourseEdits() {
+      var id = Number(document.getElementById('editCourseId').value);
+      var code = document.getElementById('editCode').value.trim();
+      var title = document.getElementById('editTitle').value.trim();
+      var creditsRaw = document.getElementById('editCredits').value.trim();
+      var term = document.getElementById('editTerm').value;
+      var description = document.getElementById('editDescription').value.trim();
+      var enabled = document.getElementById('editEnabled').checked;
+      var rows = document.querySelectorAll('#componentRows .edit-component-row');
+      var assessmentTemplates = [];
+      var compError = null;
+
+      document.getElementById('editModalError').style.display = 'none';
+
+      if (!code) {
+        showError('Course Code is required.');
+        return;
+      }
+      if (!title) {
+        showError('Title is required.');
+        return;
+      }
+      if (creditsRaw === '' || isNaN(Number(creditsRaw)) || Number(creditsRaw) < 0) {
+        showError('Credits must be a non-negative number.');
+        return;
+      }
+      if (!description) {
+        showError('Description is required.');
+        return;
+      }
+
+      rows.forEach(function (row, idx) {
+        var category = row.querySelector('.ec-category').value;
+        var templateTitle = row.querySelector('.ec-title').value.trim();
+        var weightRaw = row.querySelector('.ec-weight').value.trim();
+        var totalRaw = row.querySelector('.ec-total').value.trim();
+        var existingId = row.querySelector('.ec-category').dataset.assessmentId;
+
+        if (compError) {
+          return;
+        }
+
+        if (!templateTitle) {
+          compError = 'Component ' + (idx + 1) + ': Title / Label is required.';
+          return;
+        }
+        if (weightRaw !== '' && (isNaN(Number(weightRaw)) || Number(weightRaw) < 0 || Number(weightRaw) > 100)) {
+          compError = 'Component ' + (idx + 1) + ': Weight must be between 0 and 100.';
+          return;
+        }
+        if (totalRaw !== '' && (isNaN(Number(totalRaw)) || Number(totalRaw) < 1)) {
+          compError = 'Component ' + (idx + 1) + ': "Out of" must be at least 1.';
+          return;
+        }
+
+        assessmentTemplates.push({
+          id: existingId ? Number(existingId) : null,
+          category: category,
+          title: templateTitle,
+          weight: weightRaw !== '' ? Number(weightRaw) : 0,
+          total: totalRaw !== '' ? Number(totalRaw) : 100
+        });
+      });
+
+      if (compError) {
+        showError(compError);
+        return;
+      }
+
+      SCCSession.fetchJSON('/api/admin/courses/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: code,
+          title: title,
+          credits: Number(creditsRaw),
+          term: term,
+          description: description,
+          enabled: enabled,
+          assessmentTemplates: assessmentTemplates
+        })
+      }).then(function () {
+        closeEditModal();
+        return reloadTable();
+      }).catch(function (error) {
+        showError(error.message || 'Could not save this course.');
+      });
+    }
+
+    function initPage() {
+      document.getElementById('adminCourseTable').addEventListener('change', function (e) {
+        var id;
+        var checkbox;
+
+        if (e.target.dataset.action !== 'toggle-course-enabled') {
+          return;
+        }
+
+        checkbox = e.target;
+        id = Number(checkbox.dataset.id);
+
+        SCCSession.fetchJSON('/api/admin/courses/' + id + '/toggle', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: checkbox.checked })
+        }).catch(function (error) {
+          checkbox.checked = !checkbox.checked;
+          window.alert(error.message || 'Could not update this course.');
+        });
+      });
+
+      document.getElementById('adminCourseTable').addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-action]');
+        var id;
+
+        if (!btn) {
+          return;
+        }
+
+        id = Number(btn.dataset.id);
+
+        if (btn.dataset.action === 'delete-course') {
+          if (!confirm('Delete this course? This cannot be undone.')) {
+            return;
+          }
+
+          SCCSession.fetchJSON('/api/admin/courses/' + id, {
+            method: 'DELETE'
+          }).then(function () {
+            return reloadTable();
+          }).catch(function (error) {
+            window.alert(error.message || 'Could not delete this course.');
+          });
+          return;
+        }
+
+        if (btn.dataset.action === 'edit-course') {
+          openEditModal(id);
+        }
+      });
+
+      document.getElementById('addComponentBtn').addEventListener('click', function () {
+        addComponentRow(document.getElementById('componentRows'), null);
+      });
+
+      document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
+      document.getElementById('editModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+          closeEditModal();
+        }
+      });
+      document.getElementById('saveEditBtn').addEventListener('click', saveCourseEdits);
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && document.getElementById('editModal').style.display !== 'none') {
+          closeEditModal();
+        }
+      });
+
+      reloadTable().catch(function () {
+        document.getElementById('noCoursesMsg').textContent = 'Could not load courses right now.';
+        document.getElementById('noCoursesMsg').style.display = 'block';
+      });
+    }
+
+    SCCSession.requireRole('admin').then(initPage).catch(function () {});
+  </script>
+  <script src="assets/nav.js"></script>
+</body>
+</html>

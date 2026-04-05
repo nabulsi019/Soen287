@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find \"/Users/mohammadnabulsi/Desktop\" -name \"*soen*\" -type d 2>/dev/null | head -20)",
+      "Bash(grep -i \"assessment\" ./client/*.html)"
+    ]
+  }
+}

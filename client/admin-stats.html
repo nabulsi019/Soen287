@@ -1,0 +1,88 @@
+<!-- 
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+-->
+
+<!-- Qais alasmar 40260168-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Analytics | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul></ul>
+    </nav>
+  </header>
+  <main class="container">
+    <nav id="breadcrumb" class="breadcrumb-nav"></nav>
+    <section class="page-header">
+      <span class="page-tag">Admin</span>
+      <h1>Analytics & Stats</h1>
+      <p>Review participation, completion rates, and workload distribution.</p>
+    </section>
+    <section class="dashboard-grid">
+      <article class="card">
+        <h2>Total Students</h2>
+        <p class="stat-value" id="totalStudentsCount">--</p>
+        <p class="helper-text">Count of registered users with the student role.</p>
+      </article>
+      <article class="card full-span">
+        <h2>Per-Course Completion</h2>
+        <div id="courseCompletionList" class="chart-list"></div>
+      </article>
+    </section>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+  <script src="assets/session.js"></script>
+  <script>
+    SCCSession.requireRole('admin').then(function () {
+      return SCCSession.fetchJSON('/api/admin/stats');
+    }).then(function (data) {
+      var listEl = document.getElementById('courseCompletionList');
+
+      document.getElementById('totalStudentsCount').textContent = data.totalStudents;
+      listEl.innerHTML = '';
+
+      if (!data.courses || data.courses.length === 0) {
+        listEl.innerHTML = '<p class="helper-text">No courses created yet.</p>';
+        return;
+      }
+
+      data.courses.forEach(function (course) {
+        var bar = document.createElement('div');
+
+        bar.className = 'progress';
+        bar.innerHTML =
+          '<div class="progress-label"><span>' + course.code + ' — ' + course.title + '</span><strong>' + course.enrolledCount + ' enrolled</strong></div>' +
+          '<div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="' + (data.totalStudents || 1) + '" aria-valuenow="' + course.enrolledCount + '">' +
+            '<div class="progress-fill" style="width:' + Math.round(course.enrolledCount / (data.totalStudents || 1) * 100) + '%;"></div>' +
+          '</div>';
+        listEl.appendChild(bar);
+      });
+    }).catch(function () {
+      document.getElementById('totalStudentsCount').textContent = '--';
+      document.getElementById('courseCompletionList').innerHTML = '<p class="helper-text">Could not load stats right now.</p>';
+    });
+  </script>
+  <script src="assets/nav.js"></script>
+</body>
+</html>

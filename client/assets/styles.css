@@ -1,0 +1,820 @@
+/*
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+*/
+
+/* Global color tokens used throughout the app */
+:root {
+  --primary: #7a1d3f;
+  --primary-dark: #5c102c;
+  --accent: #008c9e;
+  --accent-light: #bce8ef;
+  --bg: #f6f2f4;
+  --surface: #ffffff;
+  --surface-alt: #faf7fa;
+  --border: #e3d9e2;
+  --text: #1f1b2c;
+  --muted: #6d6577;
+  --success: #1f8a6b;
+  --error: #b42318;
+}
+
+/* Apply border-box sizing to all elements */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Base page layout: full height column with background and font */
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.6;
+}
+
+/* Keep images responsive */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Base link style — no underline, inherits text color */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+/* Highlight link on hover/focus */
+a:hover,
+a:focus-visible {
+  color: var(--accent);
+}
+
+/* Sticky top header with shadow */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: 0 10px 30px rgba(31, 27, 44, 0.06);
+}
+
+/* Main navigation bar layout */
+.primary-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  gap: 1rem;
+}
+
+/* Brand logo + name link on the left */
+.primary-nav .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+
+.primary-nav .brand span {
+  line-height: 1.2;
+}
+
+/* Small logo image in the nav */
+.nav-logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  transition: transform 250ms ease;
+}
+
+/* Hide logo if image fails to load */
+.nav-logo.logo-hidden {
+  display: none;
+}
+
+/* Nav links list */
+.primary-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+}
+
+.primary-nav li {
+  margin: 0;
+}
+
+/* Individual nav link pill style */
+.primary-nav a {
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+/* Active/hover state for nav links */
+.primary-nav a.active,
+.primary-nav a:hover,
+.primary-nav a:focus-visible {
+  background: rgba(122, 29, 63, 0.12);
+  color: var(--primary);
+}
+
+/* Hamburger toggle button — hidden on desktop */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.4rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+/* Hamburger lines */
+.nav-toggle span {
+  width: 24px;
+  height: 3px;
+  background: var(--text);
+  border-radius: 999px;
+}
+
+/* Centered content wrapper with max-width */
+.container {
+  width: min(1200px, 94%);
+  margin: 2rem auto;
+  flex: 1;
+}
+
+/* Main content column with vertical spacing */
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Hero banner on the home page */
+.hero {
+  background: var(--surface);
+  border-radius: 1.5rem;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(122, 29, 63, 0.08);
+  text-align: center;
+}
+
+/* Centers hero content vertically */
+.hero-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Large logo shown in the hero section */
+.brand-logo {
+  width: 170px;
+  height: auto;
+  transition: transform 300ms ease;
+}
+
+.brand-logo:hover {
+  transform: scale(1.03);
+}
+
+/* Row of call-to-action buttons */
+.cta-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+/* Base button style — pill shape, bold text */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease;
+}
+
+/* Keyboard focus ring for accessibility */
+.btn:focus-visible {
+  outline: 3px solid rgba(0, 140, 158, 0.35);
+  outline-offset: 3px;
+}
+
+/* Slight lift on hover */
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Primary (default) button — dark red */
+.btn-primary,
+.btn {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* Secondary button — light teal */
+.btn-secondary {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* White rounded card used for forms, sections, and grid items */
+.card,
+.hero,
+.filters,
+.layout,
+.dashboard-grid > *,
+.card-grid > * {
+  background: var(--surface);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: 0 12px 30px rgba(31, 27, 44, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Card that spans all grid columns */
+.card.full-span {
+  grid-column: 1 / -1;
+}
+
+/* Top section of a page with title and description */
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Small label pill above a page title (e.g. "Admin") */
+.page-tag {
+  align-self: flex-start;
+  background: rgba(0, 140, 158, 0.1);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 0.25rem 0.85rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+/* Row of metadata (e.g. term, credits) in muted text */
+.meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* Centers login/register pages */
+.auth-page {
+  align-items: center;
+  text-align: center;
+}
+
+/* Narrow card for login and register forms */
+.auth-page .card {
+  width: min(460px, 100%);
+  margin-inline: auto;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Form field label stacks above its input */
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* Shared style for all form inputs */
+input,
+select,
+textarea {
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--border);
+  font: inherit;
+  background: var(--surface-alt);
+  transition: border 200ms ease, box-shadow 200ms ease;
+}
+
+/* Highlight input when focused */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 140, 158, 0.15);
+  outline: none;
+}
+
+/* Allow vertical resize only for textareas */
+textarea {
+  resize: vertical;
+}
+
+/* Inline checkbox label layout */
+.checkbox {
+  flex-direction: row;
+  align-items: center;
+  font-weight: 500;
+}
+
+.checkbox input {
+  width: auto;
+  margin-right: 0.5rem;
+}
+
+/* Row of submit/cancel buttons at end of a form */
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Form stacks fields vertically */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Small hint or feedback text below a field */
+.helper-text {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* Error state feedback */
+.helper-text[data-state='error'] {
+  color: var(--error);
+}
+
+/* Success state feedback */
+.helper-text[data-state='success'] {
+  color: var(--success);
+}
+
+/* Muted/secondary text style */
+.muted {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.muted {
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Responsive grid for dashboard cards */
+.dashboard-grid,
+.card-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+/* Minimum height for card grid items */
+.card-grid > * {
+  min-height: 120px;
+}
+
+/* Scrollable wrapper for wide tables on small screens */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Full-width data table with no border gaps */
+.responsive-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+/* Tinted header row */
+.responsive-table thead {
+  background: rgba(122, 29, 63, 0.08);
+}
+
+/* Cell padding and bottom border */
+.responsive-table th,
+.responsive-table td {
+  padding: 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Row highlight on hover */
+.responsive-table tbody tr:hover {
+  background: rgba(122, 29, 63, 0.04);
+}
+
+/* Inline action buttons inside a table cell */
+.table-actions {
+  display: inline-flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Text-style action button (e.g. Edit, View) */
+.table-actions button {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+  transition: color 200ms ease;
+}
+
+.table-actions button:hover {
+  color: var(--primary);
+}
+
+/* Delete/destructive action button */
+.table-actions button.danger {
+  color: var(--error);
+}
+
+/* Empty state box shown when a list has no items */
+.placeholder,
+.table-placeholder,
+.empty-state {
+  min-height: 160px;
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  color: var(--muted);
+  border: 2px dashed var(--border);
+  border-radius: 1rem;
+  background: var(--surface-alt);
+}
+
+/* Status badge pill (pending / completed) */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Orange badge for pending assessments */
+.badge.pending {
+  background: rgba(255, 145, 77, 0.18);
+  color: #c25400;
+}
+
+/* Green badge for completed assessments */
+.badge.completed {
+  background: rgba(31, 138, 107, 0.18);
+  color: var(--success);
+}
+
+/* Progress bar container with label and track */
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Label row above the bar showing name and percentage */
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* Background track of the progress bar */
+.progress-track {
+  width: 100%;
+  height: 0.75rem;
+  background: rgba(0, 140, 158, 0.15);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+/* Colored fill inside the progress track */
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+  border-radius: inherit;
+  transition: width 300ms ease;
+}
+
+/* Vertical list of progress bars used in analytics */
+.chart-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Large number displayed in a stat card */
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+
+/* Info/notification box */
+.alert {
+  border-radius: 0.9rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(0, 140, 158, 0.25);
+  background: rgba(0, 140, 158, 0.08);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+/* Blue-tinted info variant */
+.alert.info {
+  border-color: rgba(0, 140, 158, 0.35);
+}
+
+/* Row of controls for template selection actions */
+.template-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Wide dropdown in template actions */
+.template-actions select {
+  min-width: 240px;
+}
+
+/* List of assessment component rows in a form */
+.components-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+/* Single assessment component row with inputs and remove button */
+.component-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+/* Remove button inside a component row */
+.component-row button {
+  border: none;
+  background: rgba(122, 29, 63, 0.08);
+  border-radius: 0.8rem;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.component-row button:hover {
+  background: rgba(122, 29, 63, 0.18);
+}
+
+/* Shown when a list has no items yet */
+.empty-message {
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ── Course average banner (course-details.html) ────────────────── */
+/* Prominent pill shown below the course meta row */
+.average-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  background: rgba(0, 140, 158, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(0, 140, 158, 0.25);
+}
+
+/* Green tint when average ≥ 80 % */
+.average-banner.avg-high {
+  background: rgba(31, 138, 107, 0.12);
+  color: var(--success);
+  border-color: rgba(31, 138, 107, 0.3);
+}
+
+/* Amber tint when average is 60–79 % */
+.average-banner.avg-mid {
+  background: rgba(255, 145, 77, 0.12);
+  color: #c25400;
+  border-color: rgba(255, 145, 77, 0.3);
+}
+
+/* Red tint when average < 60 % */
+.average-banner.avg-low {
+  background: rgba(180, 35, 24, 0.1);
+  color: var(--error);
+  border-color: rgba(180, 35, 24, 0.25);
+}
+
+/* Average cell in the enrolled-courses table (courses.html) */
+.course-avg-cell {
+  white-space: nowrap;
+}
+
+/* Compact number inputs used inside the assessment table for earned/total marks */
+.marks-input {
+  width: 5rem;
+  padding: 0.3rem 0.45rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Invalid state highlight for marks inputs */
+.marks-input:invalid {
+  border-color: var(--error);
+  box-shadow: 0 0 0 2px rgba(180, 35, 24, 0.15);
+}
+
+/* Score percentage shown in the assessment table */
+.score-cell {
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 3.5rem;
+  white-space: nowrap;
+}
+
+/* Danger/destructive button variant */
+.btn-danger {
+  background: rgba(180, 35, 24, 0.1);
+  color: var(--error);
+}
+
+.btn-danger:hover {
+  background: rgba(180, 35, 24, 0.2);
+}
+
+/* ── Breadcrumb navigation ────────────────────────────────────── */
+/* Container injected by nav.js into every page via #breadcrumb */
+.breadcrumb-nav {
+  padding: 0.35rem 0 0.1rem;
+}
+
+/* Horizontal ordered list with chevron separators */
+.breadcrumb-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.breadcrumb-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+/* Chevron separator after every item except the last */
+.breadcrumb-list li:not(:last-child)::after {
+  content: '\203A'; /* › */
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* Clickable crumbs use the accent colour */
+.breadcrumb-list a {
+  color: var(--accent);
+  transition: color 150ms ease;
+}
+
+.breadcrumb-list a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* Current-page crumb is plain text, slightly bolder */
+.breadcrumb-list span {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* Logout nav link styled to match other nav links */
+#nav-logout-link {
+  color: var(--primary);
+}
+
+/* ── Edit-course modal inputs (admin-course-manage.html) ──────── */
+/* Compact inputs & selects inside the assessment component rows */
+.edit-component-row input,
+.edit-component-row select {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+/* card-header-row: used to place a button next to a heading */
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Page footer pinned to the bottom */
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: auto;
+  color: var(--muted);
+}
+
+/* Mobile layout adjustments for screens under 900px */
+@media (max-width: 900px) {
+  /* Show hamburger toggle on mobile */
+  .nav-toggle {
+    display: flex;
+  }
+
+  /* Allow nav to wrap on small screens */
+  .primary-nav {
+    flex-wrap: wrap;
+    padding: 1rem;
+  }
+
+  /* Hide nav links by default; show when .open is added */
+  .primary-nav ul {
+    flex-direction: column;
+    width: 100%;
+    display: none;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+
+  .primary-nav.open ul {
+    display: flex;
+  }
+
+  /* Full-width links in mobile nav */
+  .primary-nav a {
+    width: 100%;
+  }
+
+  /* Prevent table cells from wrapping awkwardly */
+  .responsive-table,
+  .responsive-table th,
+  .responsive-table td {
+    white-space: normal;
+  }
+
+  .hero-brand {
+    text-align: center;
+    justify-content: center;
+  }
+
+  .brand-visual {
+    flex: 1 1 100%;
+  }
+}

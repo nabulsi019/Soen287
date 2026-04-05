@@ -1,0 +1,164 @@
+<!-- 
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Dashboard | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul></ul>
+    </nav>
+  </header>
+  <main class="container">
+    <nav id="breadcrumb" class="breadcrumb-nav"></nav>
+    <section class="page-header">
+      <h1>Welcome, Student</h1>
+      <p>Overview of current courses, assessments, and upcoming tasks.</p>
+      <p class="helper-text" id="dashboardFeedback"></p>
+    </section>
+    <section class="dashboard-grid">
+      <article class="card">
+        <div class="card-header-row">
+          <h2>Active Courses</h2>
+          <a href="courses.html" class="btn btn-secondary">Browse Courses</a>
+        </div>
+        <ul id="activeCoursesList"></ul>
+      </article>
+      <article class="card">
+        <h2>Upcoming Assessments</h2>
+        <ul id="upcomingAssessments"></ul>
+      </article>
+      <article class="card full-span">
+        <h2>Progress Visualization</h2>
+        <div id="progressChart" class="chart-list" aria-live="polite"></div>
+      </article>
+    </section>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+  <script src="assets/session.js"></script>
+  <script>
+    var termLabels = {
+      'winter-2026': 'Winter 2026',
+      'summer-2026': 'Summer 2026',
+      'fall-2026':   'Fall 2026',
+      'winter-2027': 'Winter 2027'
+    };
+
+    function setDashboardFeedback(message, state) {
+      var feedback = document.getElementById('dashboardFeedback');
+
+      feedback.textContent = message || '';
+
+      if (state) {
+        feedback.setAttribute('data-state', state);
+      } else {
+        feedback.removeAttribute('data-state');
+      }
+    }
+
+    function renderCourses(courses) {
+      var coursesList = document.getElementById('activeCoursesList');
+      coursesList.innerHTML = '';
+
+      if (courses.length === 0) {
+        coursesList.innerHTML = '<li class="helper-text">No courses yet. <a href="courses.html">Browse courses</a>.</li>';
+        return;
+      }
+
+      courses.forEach(function (course) {
+        var li = document.createElement('li');
+        li.innerHTML = '<a href="course-details.html?id=' + course.id + '">' + course.code + ' — ' + course.name + '</a> <small>(' + (termLabels[course.term] || course.term) + ')</small>';
+        coursesList.appendChild(li);
+      });
+    }
+
+    function renderUpcoming(upcomingAssessments) {
+      var upcomingList = document.getElementById('upcomingAssessments');
+      upcomingList.innerHTML = '';
+
+      if (upcomingAssessments.length === 0) {
+        upcomingList.innerHTML = '<li class="helper-text">No pending assessments.</li>';
+        return;
+      }
+
+      upcomingAssessments.slice(0, 8).forEach(function (assessment) {
+        var li = document.createElement('li');
+        li.innerHTML =
+          '<a href="course-details.html?id=' + assessment.courseId + '">' + assessment.course + ' — ' + assessment.title + '</a>' +
+          (assessment.dueDate ? ' <small>Due: ' + assessment.dueDate + '</small>' : '');
+        upcomingList.appendChild(li);
+      });
+    }
+
+    function renderProgress(courses) {
+      var chartDiv = document.getElementById('progressChart');
+
+      chartDiv.innerHTML = '';
+
+      if (courses.length === 0) {
+        chartDiv.innerHTML = '<p class="helper-text">Enroll in courses to see your progress.</p>';
+        return;
+      }
+
+      courses.forEach(function (course) {
+        var pct = course.currentAverage !== null ? course.currentAverage : 0;
+        var bar = document.createElement('div');
+
+        bar.className = 'progress';
+        bar.innerHTML =
+          '<div class="progress-label">' +
+            '<span><a href="course-details.html?id=' + course.id + '">' + course.code + ' — ' + course.name + '</a></span>' +
+            '<strong>' + (course.currentAverage !== null ? course.currentAverage + '%' : 'No marks yet') + '</strong>' +
+          '</div>' +
+          '<div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '">' +
+            '<div class="progress-fill" style="width:' + pct + '%;"></div>' +
+          '</div>' +
+          '<small>' + (course.completedAssessmentCount || 0) + ' of ' + (course.assessmentCount || 0) + ' assessments completed</small>';
+        chartDiv.appendChild(bar);
+      });
+    }
+
+    SCCSession.requireRole('student').then(function () {
+      return SCCSession.fetchJSON('/api/dashboard');
+    })
+      .then(function (data) {
+        localStorage.setItem('scc_myCourses', JSON.stringify(data.courses || []));
+        setDashboardFeedback('');
+        renderCourses(data.courses || []);
+        renderUpcoming(data.upcomingAssessments || []);
+        renderProgress(data.courses || []);
+      }).catch(function (error) {
+        if (error.message === 'Login required.' || error.message === 'Access denied.') {
+          return;
+        }
+
+        setDashboardFeedback(error.message || 'Could not load dashboard right now.', 'error');
+        document.getElementById('activeCoursesList').innerHTML = '<li class="helper-text">Could not load your courses.</li>';
+        document.getElementById('upcomingAssessments').innerHTML = '<li class="helper-text">Could not load upcoming assessments.</li>';
+        document.getElementById('progressChart').innerHTML = '<p class="helper-text">Could not load progress right now.</p>';
+      });
+  </script>
+  <script src="assets/nav.js"></script>
+</body>
+</html>

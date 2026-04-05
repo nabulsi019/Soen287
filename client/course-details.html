@@ -1,0 +1,344 @@
+<!-- 
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Details | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul></ul>
+    </nav>
+  </header>
+  <main class="container">
+    <nav id="breadcrumb" class="breadcrumb-nav"></nav>
+    <section class="page-header">
+      <h1 id="courseTitle">Course Title Placeholder</h1>
+      <p id="courseSummary">High-level summary of the course.</p>
+      <div class="meta">
+        <span id="courseCode">COMP 000</span>
+        <span id="courseCredits">3 credits</span>
+        <span id="courseTerm">Winter 2026</span>
+      </div>
+      <div class="average-banner" id="averageBanner">
+        Current Average: <strong id="averageValue">No grades entered yet</strong>
+      </div>
+      <p class="helper-text" id="courseDetailsFeedback"></p>
+    </section>
+    <section class="layout course-details-grid">
+      <article class="card">
+        <h2>Description</h2>
+        <p id="courseDescription">Detailed description placeholder.</p>
+      </article>
+      <article class="card">
+        <div class="card-header">
+          <h2>Assessments</h2>
+          <a class="btn btn-secondary" id="addAssessmentLink" href="assessment-form.html">+ Add Assessment</a>
+        </div>
+        <div class="table-wrapper">
+          <table class="responsive-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Weight</th>
+                <th>Due</th>
+                <th>Earned</th>
+                <th>Total</th>
+                <th>Score</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="courseAssessmentRows"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+  <script src="assets/session.js"></script>
+  <script>
+    var params = new URLSearchParams(window.location.search);
+    var courseId = Number(params.get('id'));
+    var termLabels = {
+      'winter-2026': 'Winter 2026',
+      'summer-2026': 'Summer 2026',
+      'fall-2026':   'Fall 2026',
+      'winter-2027': 'Winter 2027'
+    };
+    var course = null;
+    var assessments = [];
+
+    if (!courseId) {
+      window.location.href = 'courses.html';
+    }
+
+    function setCourseFeedback(message, state) {
+      var feedback = document.getElementById('courseDetailsFeedback');
+
+      feedback.textContent = message || '';
+
+      if (state) {
+        feedback.setAttribute('data-state', state);
+      } else {
+        feedback.removeAttribute('data-state');
+      }
+    }
+
+    function renderAverage(avg) {
+      var valueEl = document.getElementById('averageValue');
+      var bannerEl = document.getElementById('averageBanner');
+
+      if (avg === null || avg === undefined) {
+        valueEl.textContent = 'No grades entered yet';
+        bannerEl.className = 'average-banner';
+        return;
+      }
+
+      valueEl.textContent = Number(avg).toFixed(1) + '%';
+      bannerEl.className = 'average-banner ' + (avg >= 80 ? 'avg-high' : avg >= 60 ? 'avg-mid' : 'avg-low');
+    }
+
+    function updateBreadcrumb() {
+      var breadcrumbEl = document.getElementById('breadcrumb');
+      var currentCrumb;
+
+      if (!breadcrumbEl || !course) {
+        return;
+      }
+
+      currentCrumb = breadcrumbEl.querySelector('[aria-current="page"]');
+      if (currentCrumb) {
+        currentCrumb.textContent = course.code + ' — ' + course.name;
+      }
+    }
+
+    function renderCourse() {
+      document.getElementById('courseTitle').textContent = course.name;
+      document.getElementById('courseSummary').textContent = course.instructor ? 'Instructor: ' + course.instructor : 'Course overview';
+      document.getElementById('courseCode').textContent = course.code;
+      document.getElementById('courseCredits').textContent = course.credits ? course.credits + ' credits' : '';
+      document.getElementById('courseTerm').textContent = termLabels[course.term] || course.term;
+      document.getElementById('courseDescription').textContent = course.description || (course.code + ' — ' + (termLabels[course.term] || course.term));
+      document.getElementById('addAssessmentLink').href = 'assessment-form.html?courseId=' + courseId;
+      renderAverage(course.currentAverage);
+      updateBreadcrumb();
+    }
+
+    function renderAssessments() {
+      var tbody = document.getElementById('courseAssessmentRows');
+
+      tbody.innerHTML = '';
+
+      if (assessments.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="helper-text">No assessments yet.</td></tr>';
+        return;
+      }
+
+      assessments.forEach(function (assessment) {
+        var tr = document.createElement('tr');
+        var earned = assessment.earned !== null && assessment.earned !== undefined ? assessment.earned : '';
+        var total = assessment.total !== null && assessment.total !== undefined ? assessment.total : '';
+        var pct = '';
+
+        if (earned !== '' && total !== '' && Number(total) > 0) {
+          pct = (Number(earned) / Number(total) * 100).toFixed(1) + '%';
+        }
+
+        tr.innerHTML =
+          '<td>' + assessment.title + '</td>' +
+          '<td>' + assessment.category + '</td>' +
+          '<td>' + (assessment.weight ? assessment.weight + '%' : '—') + '</td>' +
+          '<td>' + (assessment.dueDate || '—') + '</td>' +
+          '<td><input type="number" min="0" class="marks-input" data-field="earned" data-id="' + assessment.id + '" value="' + earned + '" placeholder="—" aria-label="Earned marks" /></td>' +
+          '<td><input type="number" min="0" class="marks-input" data-field="total" data-id="' + assessment.id + '" value="' + total + '" placeholder="—" aria-label="Total marks" /></td>' +
+          '<td class="score-cell">' + (pct || '—') + '</td>' +
+          '<td><button class="btn btn-secondary" style="padding:2px 8px;font-size:.8rem;" data-action="toggle-status" data-id="' + assessment.id + '">' + (assessment.status === 'completed' ? 'Completed' : 'Pending') + '</button></td>' +
+          '<td class="action-cell"><button class="btn btn-danger" data-action="delete-assessment" data-id="' + assessment.id + '">Delete</button></td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    function applyUpdatedAssessment(updatedAssessment, currentAverage) {
+      assessments = assessments.map(function (item) {
+        return item.id === updatedAssessment.id ? updatedAssessment : item;
+      });
+      course.currentAverage = currentAverage;
+      renderAssessments();
+      renderAverage(currentAverage);
+    }
+
+    function loadPage() {
+      return Promise.all([
+        SCCSession.fetchJSON('/api/courses'),
+        SCCSession.fetchJSON('/api/assessments?courseId=' + encodeURIComponent(courseId))
+      ]).then(function (results) {
+        var courses = results[0];
+
+        localStorage.setItem('scc_myCourses', JSON.stringify(courses));
+        course = courses.find(function (item) {
+          return item.id === courseId;
+        }) || null;
+        assessments = results[1];
+
+        if (!course) {
+          window.location.href = 'courses.html';
+          return;
+        }
+
+        setCourseFeedback('');
+        renderCourse();
+        renderAssessments();
+      }).catch(function (error) {
+        if (error.message === 'Login required.' || error.message === 'Access denied.') {
+          return;
+        }
+
+        setCourseFeedback(error.message || 'Could not load this course.', 'error');
+        document.getElementById('courseAssessmentRows').innerHTML =
+          '<tr><td colspan="9" class="helper-text">Could not load this course.</td></tr>';
+      });
+    }
+
+    document.getElementById('courseAssessmentRows').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-action]');
+      var id;
+      var assessment;
+
+      if (!btn) {
+        return;
+      }
+
+      id = Number(btn.dataset.id);
+      assessment = assessments.find(function (item) {
+        return item.id === id;
+      });
+
+      if (!assessment) {
+        return;
+      }
+
+      if (btn.dataset.action === 'delete-assessment') {
+        SCCSession.fetchJSON('/api/assessments/' + id, {
+          method: 'DELETE'
+        }).then(function () {
+          setCourseFeedback('');
+          return loadPage();
+        }).catch(function (error) {
+          setCourseFeedback(error.message || 'Could not delete this assessment.', 'error');
+        });
+        return;
+      }
+
+      if (btn.dataset.action === 'toggle-status') {
+        SCCSession.fetchJSON('/api/assessments/' + id, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: assessment.status === 'completed' ? 'pending' : 'completed'
+          })
+        }).then(function (data) {
+          setCourseFeedback('');
+          applyUpdatedAssessment(data.assessment, data.currentAverage);
+        }).catch(function (error) {
+          setCourseFeedback(error.message || 'Could not update this assessment.', 'error');
+        });
+      }
+    });
+
+    document.getElementById('courseAssessmentRows').addEventListener('change', function (e) {
+      var input = e.target;
+      var id;
+      var field;
+      var raw;
+      var currentAssessment;
+      var newValue;
+
+      if (!input.classList.contains('marks-input')) {
+        return;
+      }
+
+      id = Number(input.dataset.id);
+      field = input.dataset.field;
+      raw = input.value.trim();
+      currentAssessment = assessments.find(function (item) {
+        return item.id === id;
+      });
+
+      if (!currentAssessment) {
+        return;
+      }
+
+      if (raw !== '' && Number(raw) < 0) {
+        input.setCustomValidity('Value cannot be negative.');
+        input.reportValidity();
+        input.value = '';
+        return;
+      }
+
+      if (field === 'total' && raw !== '' && Number(raw) <= 0) {
+        input.setCustomValidity('Total marks must be greater than 0.');
+        input.reportValidity();
+        input.value = currentAssessment.total !== null ? currentAssessment.total : '';
+        return;
+      }
+
+      if (field === 'earned' && raw !== '' && currentAssessment.total !== null &&
+          currentAssessment.total !== undefined && Number(raw) > Number(currentAssessment.total)) {
+        input.setCustomValidity('Earned marks cannot exceed total marks.');
+        input.reportValidity();
+        input.value = currentAssessment.earned !== null ? currentAssessment.earned : '';
+        return;
+      }
+
+      input.setCustomValidity('');
+      newValue = raw === '' ? null : Number(raw);
+
+      SCCSession.fetchJSON('/api/assessments/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify((function () {
+          var payload = {};
+          payload[field] = newValue;
+          return payload;
+        }()))
+      }).then(function (data) {
+        setCourseFeedback('');
+        applyUpdatedAssessment(data.assessment, data.currentAverage);
+      }).catch(function (error) {
+        setCourseFeedback(error.message || 'Could not save this change.', 'error');
+        input.setCustomValidity(error.message || 'Could not save this change.');
+        input.reportValidity();
+        loadPage();
+      });
+    });
+
+    SCCSession.requireRole('student').then(function () {
+      return loadPage();
+    }).catch(function () {});
+  </script>
+  <script src="assets/nav.js"></script>
+</body>
+</html>

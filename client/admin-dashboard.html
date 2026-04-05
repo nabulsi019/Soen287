@@ -1,0 +1,58 @@
+<!-- 
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+-->
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul></ul>
+    </nav>
+  </header>
+  <main class="container">
+    <nav id="breadcrumb" class="breadcrumb-nav"></nav>
+    <section class="page-header">
+      <span class="page-tag">Admin</span>
+      <h1>Admin Operations</h1>
+      <p>Monitor platform usage and manage courses.</p>
+    </section>
+    <section class="dashboard-grid">
+      <article class="card">
+        <h2>Quick Actions</h2>
+        <ul>
+          <li><a href="admin-courses.html">Create Course</a></li>
+          <li><a href="admin-course-manage.html">Manage Courses</a></li>
+          <li><a href="admin-stats.html">Analytics</a></li>
+        </ul>
+      </article>
+    </section>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+  <script src="assets/session.js"></script>
+  <script>
+    SCCSession.requireRole('admin').catch(function () {});
+  </script>
+  <script src="assets/nav.js"></script>
+</body>
+</html>

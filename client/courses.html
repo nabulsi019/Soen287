@@ -1,0 +1,364 @@
+<!-- 
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Courses | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+      <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span><span></span><span></span>
+      </button>
+      <ul></ul>
+    </nav>
+  </header>
+  <main class="container">
+    <nav id="breadcrumb" class="breadcrumb-nav"></nav>
+    <section class="page-header">
+      <h1>Courses</h1>
+      <p>Search for available courses and manage your enrolled courses.</p>
+      <p class="helper-text" id="coursesFeedback"></p>
+    </section>
+
+    <!-- ── Search ───────────────────────────────────────────── -->
+    <section class="card">
+      <h2>Search Available Courses</h2>
+      <label>Term
+        <select id="termSelect">
+          <option value="">-- Select a term --</option>
+          <option value="winter-2026">Winter 2026</option>
+          <option value="summer-2026">Summer 2026</option>
+          <option value="fall-2026">Fall 2026</option>
+          <option value="winter-2027">Winter 2027</option>
+        </select>
+      </label>
+      <label>Search by code or title
+        <input type="text" id="searchInput" placeholder="e.g., COMP or Engineering" disabled />
+      </label>
+      <div class="form-actions">
+        <button type="button" class="btn" id="searchBtn" disabled>Search</button>
+      </div>
+    </section>
+
+    <section class="card" id="resultsSection" style="display:none;">
+      <h2>Results</h2>
+      <div class="table-wrapper">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Title</th>
+              <th>Term</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="courseResults"></tbody>
+        </table>
+      </div>
+      <p id="noResultsMsg" class="helper-text" style="display:none;">No enabled courses found for this term.</p>
+    </section>
+
+    <!-- ── Enroll Modal ──────────────────────────────────────── -->
+    <div id="enrollModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;align-items:center;justify-content:center;">
+      <div class="card" style="max-width:400px;width:90%;margin:0 auto;">
+        <h2 id="enrollModalTitle">Enroll in Course</h2>
+        <label>Instructor Name
+          <input type="text" id="instructorInput" placeholder="e.g., Dr. Smith" />
+        </label>
+        <div class="form-actions">
+          <button class="btn" id="confirmEnrollBtn">Confirm Enroll</button>
+          <button class="btn btn-secondary" id="cancelEnrollBtn">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── My Enrolled Courses ───────────────────────────────── -->
+    <section class="card">
+      <h2>My Enrolled Courses</h2>
+      <div class="table-wrapper">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Title</th>
+              <th>Term</th>
+              <th>Average</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="enrolledTable"></tbody>
+        </table>
+      </div>
+      <p id="noEnrolledMsg" class="helper-text" style="display:none;">You have not enrolled in any courses yet.</p>
+    </section>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+  <script src="assets/session.js"></script>
+  <script>
+    var termLabels = {
+      'winter-2026': 'Winter 2026',
+      'summer-2026': 'Summer 2026',
+      'fall-2026':   'Fall 2026',
+      'winter-2027': 'Winter 2027'
+    };
+
+    var enrolledCourses = [];
+    var lastResults = [];
+    var _pendingEnrollCourse = null;
+    var termSelect = document.getElementById('termSelect');
+    var searchInput = document.getElementById('searchInput');
+    var searchBtn = document.getElementById('searchBtn');
+    var resultsSection = document.getElementById('resultsSection');
+    var enrollModal = document.getElementById('enrollModal');
+
+    function setCoursesFeedback(message, state) {
+      var feedback = document.getElementById('coursesFeedback');
+
+      feedback.textContent = message || '';
+
+      if (state) {
+        feedback.setAttribute('data-state', state);
+      } else {
+        feedback.removeAttribute('data-state');
+      }
+    }
+
+    function formatAverage(value) {
+      return value === null ? null : Number(value).toFixed(1) + '%';
+    }
+
+    function isEnrolled(adminCourseId) {
+      return enrolledCourses.some(function (course) {
+        return course.adminCourseId === adminCourseId;
+      });
+    }
+
+    function showResultsMessage(message) {
+      var noMsg = document.getElementById('noResultsMsg');
+      noMsg.textContent = message;
+      noMsg.style.display = 'block';
+      resultsSection.style.display = 'block';
+    }
+
+    function renderEnrolled() {
+      var tbody = document.getElementById('enrolledTable');
+      var noMsg = document.getElementById('noEnrolledMsg');
+
+      tbody.innerHTML = '';
+
+      if (enrolledCourses.length === 0) {
+        noMsg.style.display = 'block';
+        return;
+      }
+
+      noMsg.style.display = 'none';
+
+      enrolledCourses.forEach(function (course) {
+        var avg = formatAverage(course.currentAverage);
+        var tr = document.createElement('tr');
+
+        tr.innerHTML =
+          '<td>' + course.code + '</td>' +
+          '<td>' + course.name + '</td>' +
+          '<td>' + (termLabels[course.term] || course.term) + '</td>' +
+          '<td class="course-avg-cell">' + (avg ? '<strong>' + avg + '</strong>' : '<span class="helper-text">No grades yet</span>') + '</td>' +
+          '<td class="action-cell">' +
+            '<a href="course-details.html?id=' + course.id + '" class="btn btn-secondary">View Details</a> ' +
+            '<button class="btn btn-danger" data-action="remove" data-id="' + course.id + '">Remove</button>' +
+          '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderResults() {
+      var tbody = document.getElementById('courseResults');
+      var noMsg = document.getElementById('noResultsMsg');
+
+      tbody.innerHTML = '';
+
+      if (lastResults.length === 0) {
+        noMsg.textContent = 'No enabled courses found for this term.';
+        noMsg.style.display = 'block';
+        return;
+      }
+
+      noMsg.style.display = 'none';
+
+      lastResults.forEach(function (course) {
+        var tr = document.createElement('tr');
+
+        tr.innerHTML =
+          '<td>' + course.code + '</td>' +
+          '<td>' + course.title + '</td>' +
+          '<td>' + (termLabels[course.term] || course.term) + '</td>' +
+          '<td>' + (isEnrolled(course.id)
+            ? '<span class="helper-text">Enrolled</span>'
+            : '<button class="btn" data-action="enroll" data-id="' + course.id + '">Enroll</button>') +
+          '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    function loadEnrollments() {
+      return SCCSession.fetchJSON('/api/courses').then(function (courses) {
+        enrolledCourses = courses;
+        localStorage.setItem('scc_myCourses', JSON.stringify(courses));
+        setCoursesFeedback('');
+        renderEnrolled();
+      }).catch(function (error) {
+        setCoursesFeedback(error.message || 'Could not load your courses.', 'error');
+        document.getElementById('noEnrolledMsg').textContent = error.message || 'Could not load your courses.';
+        document.getElementById('noEnrolledMsg').style.display = 'block';
+      });
+    }
+
+    function searchCourses() {
+      var term = termSelect.value;
+      var query = searchInput.value.trim().toLowerCase();
+
+      if (!term) {
+        return;
+      }
+
+      setCoursesFeedback('');
+
+      SCCSession.fetchJSON('/api/courses/available?term=' + encodeURIComponent(term))
+        .then(function (courses) {
+          lastResults = courses.filter(function (course) {
+            if (!query) {
+              return true;
+            }
+
+            return course.code.toLowerCase().includes(query) ||
+              course.title.toLowerCase().includes(query);
+          });
+
+          resultsSection.style.display = 'block';
+          renderResults();
+        })
+        .catch(function (error) {
+          setCoursesFeedback(error.message || 'Could not load available courses.', 'error');
+          showResultsMessage(error.message || 'Could not load available courses.');
+        });
+    }
+
+    function enroll(adminCourse, instructor) {
+      return SCCSession.fetchJSON('/api/courses/enroll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          adminCourseId: adminCourse.id,
+          instructor: instructor
+        })
+      }).then(function () {
+        return loadEnrollments();
+      }).then(function () {
+        if (termSelect.value) {
+          searchCourses();
+        }
+      }).catch(function (error) {
+        setCoursesFeedback(error.message || 'Could not enroll in this course.', 'error');
+        showResultsMessage(error.message || 'Could not enroll in this course.');
+        throw error;
+      });
+    }
+
+    function removeEnrollment(courseId) {
+      return SCCSession.fetchJSON('/api/courses/' + courseId, {
+        method: 'DELETE'
+      }).then(function () {
+        return loadEnrollments();
+      }).then(function () {
+        if (termSelect.value) {
+          searchCourses();
+        }
+      }).catch(function (error) {
+        setCoursesFeedback(error.message || 'Could not remove this course.', 'error');
+        document.getElementById('noEnrolledMsg').textContent = error.message || 'Could not remove this course.';
+        document.getElementById('noEnrolledMsg').style.display = 'block';
+      });
+    }
+
+    document.getElementById('enrolledTable').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-action="remove"]');
+      if (!btn) {
+        return;
+      }
+
+      removeEnrollment(Number(btn.dataset.id));
+    });
+
+    termSelect.addEventListener('change', function () {
+      var hasTerm = this.value !== '';
+      searchInput.disabled = !hasTerm;
+      searchBtn.disabled = !hasTerm;
+      resultsSection.style.display = 'none';
+    });
+
+    searchBtn.addEventListener('click', searchCourses);
+
+    document.getElementById('courseResults').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-action="enroll"]');
+      var id;
+
+      if (!btn) {
+        return;
+      }
+
+      id = Number(btn.dataset.id);
+      _pendingEnrollCourse = lastResults.find(function (course) {
+        return course.id === id;
+      });
+
+      if (!_pendingEnrollCourse) {
+        return;
+      }
+
+      document.getElementById('enrollModalTitle').textContent = 'Enroll in ' + _pendingEnrollCourse.code;
+      document.getElementById('instructorInput').value = '';
+      enrollModal.style.display = 'flex';
+    });
+
+    document.getElementById('confirmEnrollBtn').addEventListener('click', function () {
+      var instructor;
+
+      if (!_pendingEnrollCourse) {
+        return;
+      }
+
+      instructor = document.getElementById('instructorInput').value.trim();
+      enroll(_pendingEnrollCourse, instructor).then(function () {
+        enrollModal.style.display = 'none';
+        _pendingEnrollCourse = null;
+      });
+    });
+
+    document.getElementById('cancelEnrollBtn').addEventListener('click', function () {
+      enrollModal.style.display = 'none';
+      _pendingEnrollCourse = null;
+    });
+
+    SCCSession.requireRole('student').then(function () {
+      return loadEnrollments();
+    }).catch(function () {});
+  </script>
+  <script src="assets/nav.js"></script>
+</body>
+</html>

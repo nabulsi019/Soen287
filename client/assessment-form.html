@@ -1,0 +1,175 @@
+<!-- 
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Assessment | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+      <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul></ul>
+    </nav>
+  </header>
+  <main class="container">
+    <nav id="breadcrumb" class="breadcrumb-nav"></nav>
+    <section class="page-header">
+      <h1>Add Assessment</h1>
+      <p id="courseLabel">Adding assessment for your course.</p>
+    </section>
+    <form class="card" id="assessmentForm">
+      <input type="hidden" id="courseId" />
+      <label>Assessment Title
+        <input type="text" id="title" placeholder="e.g., Midterm Exam" required />
+      </label>
+      <label>Category
+        <select id="category" required>
+          <option value="Assignment">Assignment</option>
+          <option value="Lab">Lab</option>
+          <option value="Quiz">Quiz</option>
+          <option value="Midterm">Midterm</option>
+          <option value="Final Exam">Final Exam</option>
+          <option value="Project">Project</option>
+        </select>
+      </label>
+      <label>Due Date
+        <input type="date" id="dueDate" required />
+      </label>
+      <label>Weight (%)
+        <input type="number" id="weight" min="0" max="100" step="1" placeholder="e.g., 20" required />
+      </label>
+      <label>Total Marks
+        <input type="number" id="total" min="1" step="1" value="100" required />
+      </label>
+      <div class="form-actions">
+        <button type="submit" class="btn">Save Assessment</button>
+        <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+      </div>
+      <p class="helper-text" id="assessmentFeedback"></p>
+    </form>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+  <script src="assets/session.js"></script>
+  <script>
+    var params = new URLSearchParams(window.location.search);
+    var courseId = Number(params.get('courseId'));
+    var course = null;
+
+    if (!courseId) {
+      window.location.href = 'courses.html';
+    }
+
+    function setAssessmentFeedback(message, state) {
+      var feedback = document.getElementById('assessmentFeedback');
+
+      feedback.textContent = message || '';
+
+      if (state) {
+        feedback.setAttribute('data-state', state);
+      } else {
+        feedback.removeAttribute('data-state');
+      }
+    }
+
+    function updateBreadcrumb() {
+      var breadcrumbEl = document.getElementById('breadcrumb');
+      var crumbs;
+
+      if (!breadcrumbEl || !course) {
+        return;
+      }
+
+      crumbs = breadcrumbEl.querySelectorAll('li');
+      if (crumbs.length >= 3) {
+        crumbs[1].querySelector('a').textContent = 'My Courses';
+        crumbs[1].querySelector('a').href = 'courses.html';
+        crumbs[2].querySelector('a').textContent = course.code + ' — ' + course.name;
+        crumbs[2].querySelector('a').href = 'course-details.html?id=' + courseId;
+      }
+    }
+
+    function loadCourse() {
+      return SCCSession.fetchJSON('/api/courses').then(function (courses) {
+        localStorage.setItem('scc_myCourses', JSON.stringify(courses));
+        course = courses.find(function (item) {
+          return item.id === courseId;
+        }) || null;
+
+        if (!course) {
+          window.location.href = 'courses.html';
+          return;
+        }
+
+        setAssessmentFeedback('');
+        document.getElementById('courseId').value = courseId;
+        document.getElementById('courseLabel').textContent = 'Adding assessment for: ' + course.code + ' — ' + course.name;
+        updateBreadcrumb();
+      }).catch(function (error) {
+        if (error.message === 'Login required.' || error.message === 'Access denied.') {
+          return;
+        }
+
+        document.getElementById('courseLabel').textContent = 'Could not load your course.';
+        setAssessmentFeedback(error.message || 'Could not load your course.', 'error');
+      });
+    }
+
+    document.getElementById('cancelBtn').addEventListener('click', function () {
+      window.location.href = courseId ? 'course-details.html?id=' + courseId : 'courses.html';
+    });
+
+    document.getElementById('assessmentForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      if (!course) {
+        setAssessmentFeedback('Could not find this course.', 'error');
+        return;
+      }
+
+      SCCSession.fetchJSON('/api/assessments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          courseId: courseId,
+          title: document.getElementById('title').value.trim(),
+          category: document.getElementById('category').value,
+          dueDate: document.getElementById('dueDate').value,
+          weight: Number(document.getElementById('weight').value) || 0,
+          total: Number(document.getElementById('total').value)
+        })
+      }).then(function () {
+        setAssessmentFeedback('Assessment saved! Redirecting...', 'success');
+        setTimeout(function () {
+          window.location.href = 'course-details.html?id=' + courseId;
+        }, 1000);
+      }).catch(function (error) {
+        setAssessmentFeedback(error.message || 'Could not save this assessment.', 'error');
+      });
+    });
+
+    SCCSession.requireRole('student').then(function () {
+      return loadCourse();
+    }).catch(function () {});
+  </script>
+  <script src="assets/nav.js"></script>
+</body>
+</html>

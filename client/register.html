@@ -1,0 +1,109 @@
+<!-- 
+ Qais alasmar 40260168
+ Mohammed AlNabulsi 40302830 
+ Yousef Yousef 40299095 
+Mark Nazlian 403006696
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register | Smart Course Companion</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="primary-nav" data-nav>
+                  <a class="brand" href="index.html">
+        <img src="assets/img/concordia-logo.png" alt="Concordia" class="nav-logo" onerror="this.style.display='none'" />
+        <span>Smart Course Companion</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul></ul>
+    </nav>
+  </header>
+  <main class="container auth-page">
+    <nav id="breadcrumb" class="breadcrumb-nav"></nav>
+    <h1>Register</h1>
+    <form class="card" data-form="register">
+      <label>First Name
+        <input type="text" name="firstName" required />
+      </label>
+      <label>Last Name
+        <input type="text" name="lastName" required />
+      </label>
+      <label>Email
+        <input type="email" name="email" required />
+      </label>
+      <label>Password
+        <input type="password" name="password" required minlength="8" />
+      </label>
+      <label>Confirm Password
+        <input type="password" name="confirmPassword" required minlength="8" />
+      </label>
+      <button type="submit" class="btn">Create Account</button>
+      <p class="helper-text" id="registerFeedback"></p>
+    </form>
+  </main>
+  <footer>
+    <small>&copy; 2026 Smart Course Companion</small>
+  </footer>
+  <script>
+    document.querySelector('[data-form="register"]').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var form      = e.target;
+      var firstName = form.querySelector('[name="firstName"]').value.trim();
+      var lastName  = form.querySelector('[name="lastName"]').value.trim();
+      var email     = form.querySelector('[name="email"]').value.trim().toLowerCase();
+      var password  = form.querySelector('[name="password"]').value;
+      var confirm   = form.querySelector('[name="confirmPassword"]').value;
+      var feedback  = document.getElementById('registerFeedback');
+
+      feedback.textContent = '';
+
+      // Client-side password match check before touching the server
+      if (password !== confirm) {
+        feedback.textContent = 'Passwords do not match.';
+        feedback.setAttribute('data-state', 'error');
+        return;
+      }
+
+      // Send registration data to the server via fetch (AJAX)
+      fetch('/api/auth/register', {
+        method:      'POST',
+        headers:     { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body:        JSON.stringify({
+          firstName: firstName,
+          lastName:  lastName,
+          email:     email,
+          password:  password
+        })
+      })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data.error) {
+          feedback.textContent = data.error;
+          feedback.setAttribute('data-state', 'error');
+          return;
+        }
+        feedback.textContent = 'Account created! Redirecting to login...';
+        feedback.setAttribute('data-state', 'success');
+        setTimeout(function () { window.location.href = 'login.html'; }, 1500);
+      })
+      .catch(function () {
+        feedback.textContent = 'Could not reach the server. Is it running?';
+        feedback.setAttribute('data-state', 'error');
+      });
+    });
+  </script>
+  <script src="assets/session.js"></script>
+  <script src="assets/nav.js"></script>
+</body>
+</html>
